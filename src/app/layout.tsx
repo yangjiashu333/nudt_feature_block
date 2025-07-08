@@ -10,8 +10,8 @@ import { Separator } from '@/components/ui/separator';
 import AppBreadcrumb from '@/components/app-breadcrumb';
 
 export const metadata: Metadata = {
-  title: 'Feature BLock',
-  description: 'computer vision feature blocks app',
+  title: 'Feature Block',
+  description: 'Computer vision feature blocks app for building intelligent AI workflows',
 };
 
 export default function RootLayout({
