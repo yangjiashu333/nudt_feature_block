@@ -2,72 +2,70 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
+## Project Structure
 
-This is a Next.js 15 application called "Feature Block" - a computer vision feature blocks app that uses React Konva for canvas-based graphics. The app features a sidebar navigation system and a workflow canvas for building visual components.
+This is a pnpm workspace monorepo with three packages:
+
+- `packages/web` (@nutd/web) - React frontend application using Vite, TypeScript, and Tailwind CSS
+- `packages/server` (@nutd/server) - Express.js backend API using TypeScript and nodemon for development
+- `packages/libs` (@nutd/libs) - Shared library package containing types, constants, enums, and utilities
+
+All packages use the `@nutd/*` namespace and are linked via workspace dependencies.
 
 ## Development Commands
 
-```bash
-# Install dependencies
-pnpm install
+### Root-level commands (run from project root):
+- `pnpm dev` - Start both frontend and backend development servers in parallel
+- `pnpm build` - Build all packages
+- `pnpm lint` - Run ESLint on all packages
+- `pnpm lint:fix` - Fix ESLint issues across all packages
+- `pnpm format` - Format code with Prettier across all packages
+- `pnpm clean` - Remove node_modules, dist, and build directories from all packages
 
-# Development server
-pnpm dev
+### Package-specific commands:
+- `pnpm web:dev` - Start only the frontend development server (Vite on port 5173)
+- `pnpm web:build` - Build the frontend application
+- `pnpm server:dev` - Start only the backend development server (Express on port 3000)
+- `pnpm server:build` - Build the backend application
+- `pnpm server:start` - Start the production backend server
+- `pnpm --filter @nutd/libs run build` - Build the shared libraries package
 
-# Build for production
-pnpm build
+### Working with individual packages:
+Use `pnpm --filter <package-name>` to run commands in specific packages:
+- `pnpm --filter @nutd/web run <command>`
+- `pnpm --filter @nutd/server run <command>`
+- `pnpm --filter @nutd/libs run <command>`
 
-# Start production server
-pnpm start
+## Architecture Notes
 
-# Lint code
-pnpm lint
-```
+### Shared Libraries Package (@nutd/libs)
+The libs package exports shared code through specific entry points:
+- Main export: `import { ... } from '@nutd/libs'`
+- Specific imports: `import { ... } from '@nutd/libs/types'`, `/constants`, `/enums`, `/utils`
 
-## Architecture
+The package structure includes:
+- `src/types/` - TypeScript interfaces and type definitions
+- `src/constants/` - Application constants (API endpoints, HTTP status codes, etc.)
+- `src/enums/` - Enumeration definitions (UserRole, Environment, LogLevel)
+- `src/utils/` - Utility functions (date formatting, validation, etc.)
 
-### Core Technologies
-- **Next.js 15** with App Router and React 19
-- **TypeScript** with strict configuration
-- **Tailwind CSS v4** for styling
-- **React Konva** for canvas-based graphics rendering
-- **Radix UI** components for accessible UI primitives
-- **Shadcn/ui** component system with "new-york" style
+### Frontend (Web Package)
+- React 19 with TypeScript
+- Vite for build tooling and development server
+- Tailwind CSS for styling
+- React Router for routing
+- Consumes shared types and utilities from @nutd/libs
 
-### Key Components Structure
+### Backend (Server Package)
+- Express.js with TypeScript
+- Basic health check endpoint at `/health`
+- Consumes shared types and utilities from @nutd/libs
+- Uses nodemon for development hot-reloading
 
-- **Layout System**: Uses Shadcn/ui sidebar with `SidebarProvider`, `AppSidebar`, and `SidebarInset`
-- **Workflow Canvas**: Main feature using React Konva `Stage` and `Layer` components for graphics
-- **Navigation**: Sidebar with grouped menu items (currently supports workflow navigation)
-- **Responsive Design**: Canvas automatically resizes with window dimensions
+## Important Notes
 
-### Important Configuration
-
-- **Webpack Configuration**: Modified to support Konva (`canvas: 'canvas'` external)
-- **SSR**: Workflow component uses `dynamic` import with `ssr: false` for client-side rendering
-- **Path Aliases**: `@/*` maps to `./src/*` for clean imports
-- **Shadcn/ui**: Components located in `@/components/ui/` with utils in `@/lib/utils`
-
-### App Structure
-
-- **Root**: Redirects to `/workflow` page
-- **Layout**: Dark mode by default with sidebar navigation
-- **Workflow Page**: Main canvas interface for building feature blocks
-- **Component Organization**: UI components in `@/components/ui/`, app-specific in `@/components/`
-
-### Development Notes
-
-- Uses `pnpm` as package manager
-- ESLint configured with Next.js rules and Prettier integration
-- Canvas rendering requires client-side execution (SSR disabled for workflow)
-- Responsive canvas implementation handles window resize events
-- Sidebar navigation supports Chinese labels ("基础功能", "工作流")
-
-## Key Files
-
-- `src/components/workflow/index.tsx` - Main workflow canvas component
-- `src/components/app-sidebar.tsx` - Navigation sidebar configuration
-- `src/app/layout.tsx` - Root layout with sidebar provider
-- `next.config.ts` - Webpack configuration for Konva support
-- `components.json` - Shadcn/ui configuration
+- Package Manager: This project uses pnpm (version 10.8.0) exclusively
+- TypeScript: All packages use TypeScript ~5.8.3
+- Code Quality: ESLint and Prettier are configured for all packages
+- When making changes to @nutd/libs, run `pnpm --filter @nutd/libs run build` to rebuild the shared package
+- The libs package uses ESM modules (`"type": "module"` in package.json)

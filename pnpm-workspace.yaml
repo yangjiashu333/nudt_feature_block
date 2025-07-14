@@ -1,0 +1,4 @@
+packages:
+  - "packages/*"
+
+# Workspace configuration for NUTD Feature Block project
