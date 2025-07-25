@@ -47,7 +47,7 @@ import type { User } from '@/types/auth';
 export default function UserManagement() {
   const navigate = useNavigate();
   const { user: currentUser, isAuthenticated } = useAuthStore();
-  const { getUserList } = useUserStore();
+  const { getUserList, users } = useUserStore();
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -61,7 +61,20 @@ export default function UserManagement() {
   const [batchDeleteDialogOpen, setBatchDeleteDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  const users = getUserList();
+  // 获取用户列表
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        await getUserList();
+      } catch (error) {
+        console.error('获取用户列表失败:', error);
+      }
+    };
+
+    if (isAuthenticated && currentUser?.userRole === 'admin') {
+      loadUsers();
+    }
+  }, [isAuthenticated, currentUser, getUserList]);
 
   // 权限验证：只有admin用户可以访问
   useEffect(() => {
