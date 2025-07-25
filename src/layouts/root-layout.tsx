@@ -1,7 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
 import { Outlet, useNavigate } from 'react-router';
-import { useAuthStore } from '@/stores/auth-store';
+import { useAuthStore } from '@/models/auth';
 import { useEffect, Suspense, Component, type ErrorInfo, type ReactNode } from 'react';
 
 class ErrorBoundary extends Component<

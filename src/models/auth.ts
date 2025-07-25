@@ -1,15 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface User {
-  username: string;
-  email?: string;
-}
+import type { User, UserLoginRequest, UserRegisterRequest } from '../types/auth';
 
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
-  login: (_username: string, _password: string) => void;
+  register: (_params: UserRegisterRequest) => void;
+  login: (_params: UserLoginRequest) => void;
   logout: () => void;
 }
 
@@ -18,10 +16,15 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
-      login: (username: string, _password: string) => {
+      register: (params: UserRegisterRequest) => {
+        console.log('registered', params);
+      },
+      login: (params: UserLoginRequest) => {
         const user: User = {
-          username,
-          email: `${username}@example.com`,
+          id: 0,
+          userName: 'user',
+          userAccount: params.userAccount,
+          userRole: 'user',
         };
         set({ user, isAuthenticated: true });
       },

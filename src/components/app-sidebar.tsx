@@ -1,5 +1,5 @@
 import { Briefcase, Database, Code, BookOpen, FileText, BarChart3, User } from 'lucide-react';
-import { useAuthStore } from '@/stores/auth-store';
+import { useAuthStore } from '@/models/auth';
 
 import {
   Sidebar,
