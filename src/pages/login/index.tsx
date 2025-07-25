@@ -14,26 +14,49 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import type { UserLoginRequest, UserRegisterRequest } from '@/types/auth';
 
-const formSchema = z.object({
-  username: z.string().min(1, {
+const loginSchema = z.object({
+  userAccount: z.string().min(1, {
     message: '请输入用户名',
   }),
-  password: z.string().min(1, {
+  userPassword: z.string().min(1, {
     message: '请输入密码',
   }),
 });
 
+const registerSchema = z
+  .object({
+    userAccount: z.string().min(1, {
+      message: '请输入用户名',
+    }),
+    userName: z.string().optional(),
+    userPassword: z.string().min(6, {
+      message: '密码至少需要6位',
+    }),
+    confirmPassword: z.string().min(1, {
+      message: '请确认密码',
+    }),
+  })
+  .refine((data) => data.userPassword === data.confirmPassword, {
+    message: '两次输入的密码不一致',
+    path: ['confirmPassword'],
+  });
+
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuthStore();
+  const { login, register, isAuthenticated } = useAuthStore();
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const currentSchema = isRegisterMode ? registerSchema : loginSchema;
+
+  const form = useForm<z.infer<typeof loginSchema> | z.infer<typeof registerSchema>>({
+    resolver: zodResolver(currentSchema),
     defaultValues: {
-      username: '',
-      password: '',
+      userAccount: '',
+      userPassword: '',
+      ...(isRegisterMode && { userName: '', confirmPassword: '' }),
     },
   });
 
@@ -43,8 +66,22 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, navigate]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    login(values.username, values.password);
+  useEffect(() => {
+    form.reset({
+      userAccount: '',
+      userPassword: '',
+      ...(isRegisterMode && { userName: '', confirmPassword: '' }),
+    });
+  }, [isRegisterMode, form]);
+
+  function onSubmit(values: z.infer<typeof loginSchema> | z.infer<typeof registerSchema>) {
+    if (isRegisterMode) {
+      const registerValues = values as z.infer<typeof registerSchema>;
+      const { confirmPassword: _confirmPassword, ...registerData } = registerValues;
+      register(registerData as UserRegisterRequest);
+    } else {
+      login(values as UserLoginRequest);
+    }
   }
 
   return (
@@ -52,16 +89,18 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-1">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center tracking-tight">
-            登录到文档管理系统
+            {isRegisterMode ? '注册账号' : '登录到文档管理系统'}
           </CardTitle>
-          <CardDescription className="text-center mt-1">请输入您的账号信息以继续</CardDescription>
+          <CardDescription className="text-center mt-1">
+            {isRegisterMode ? '创建您的账号以开始使用' : '请输入您的账号信息以继续'}
+          </CardDescription>
         </CardHeader>
         <CardContent className="pt-8 pb-6 px-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
-                name="username"
+                name="userAccount"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>用户名</FormLabel>
@@ -72,27 +111,67 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
+              {isRegisterMode && (
+                <FormField
+                  control={form.control}
+                  name="userName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>显示名称（可选）</FormLabel>
+                      <FormControl>
+                        <Input placeholder="请输入显示名称" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               <FormField
                 control={form.control}
-                name="password"
+                name="userPassword"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>密码</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="请输入密码" {...field} />
+                      <Input
+                        type="password"
+                        placeholder={isRegisterMode ? '请输入密码（至少6位）' : '请输入密码'}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6 rounded-lg text-base font-medium transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
-              >
-                登录
+              {isRegisterMode && (
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>确认密码</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="请再次输入密码" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              <Button className="cursor-pointer w-full" type="submit">
+                {isRegisterMode ? '注册' : '登录'}
               </Button>
             </form>
           </Form>
+          <div className="mt-6 text-center">
+            <Button
+              className="cursor-pointer"
+              variant="link"
+              onClick={() => setIsRegisterMode(!isRegisterMode)}
+            >
+              {isRegisterMode ? '已有账号？立即登录' : '没有账号？立即注册'}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
