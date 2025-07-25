@@ -67,7 +67,8 @@ export function AddUserModal({ open, onOpenChange }: AddUserModalProps) {
     
     try {
       // 检查用户名是否已存在
-      if (isUserAccountExists(values.userAccount)) {
+      const accountExists = await isUserAccountExists(values.userAccount);
+      if (accountExists) {
         form.setError('userAccount', {
           type: 'manual',
           message: '用户名已存在',
@@ -76,7 +77,7 @@ export function AddUserModal({ open, onOpenChange }: AddUserModalProps) {
         return;
       }
 
-      const result = addUser({
+      const result = await addUser({
         userAccount: values.userAccount,
         userName: values.userName,
         userPassword: values.userPassword,

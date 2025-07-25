@@ -1,35 +1,72 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
+import { authApi } from '@/services/api/auth';
 import type { User, UserLoginRequest, UserRegisterRequest } from '../types/auth';
 
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
-  register: (_params: UserRegisterRequest) => void;
-  login: (_params: UserLoginRequest) => void;
-  logout: () => void;
+  isLoading: boolean;
+  register: (_params: UserRegisterRequest) => Promise<{ success: boolean; message?: string }>;
+  login: (_params: UserLoginRequest) => Promise<{ success: boolean; message?: string }>;
+  logout: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, _get) => ({
       user: null,
       isAuthenticated: false,
-      register: (params: UserRegisterRequest) => {
-        console.log('registered', params);
+      isLoading: false,
+      
+      register: async (params: UserRegisterRequest) => {
+        set({ isLoading: true });
+        try {
+          await authApi.register(params);
+          set({ isLoading: false });
+          return { success: true, message: '注册成功' };
+        } catch (error: any) {
+          set({ isLoading: false });
+          return { success: false, message: error.message || '注册失败' };
+        }
       },
-      login: (params: UserLoginRequest) => {
-        const user: User = {
-          id: 1,
-          userName: '管理员',
-          userAccount: params.userAccount,
-          userRole: 'admin',
-        };
-        set({ user, isAuthenticated: true });
+      
+      login: async (params: UserLoginRequest) => {
+        set({ isLoading: true });
+        try {
+          const result = await authApi.login(params);
+          set({ 
+            user: result.user, 
+            isAuthenticated: true,
+            isLoading: false 
+          });
+          return { success: true, message: '登录成功' };
+        } catch (error: any) {
+          set({ isLoading: false });
+          return { success: false, message: error.message || '登录失败' };
+        }
       },
-      logout: () => {
-        set({ user: null, isAuthenticated: false });
+      
+      logout: async () => {
+        set({ isLoading: true });
+        try {
+          await authApi.logout();
+          // 清除token
+          localStorage.removeItem('api_token');
+          set({ 
+            user: null, 
+            isAuthenticated: false,
+            isLoading: false 
+          });
+        } catch (error) {
+          // 即使API失败，也要清除本地状态
+          localStorage.removeItem('api_token');
+          set({ 
+            user: null, 
+            isAuthenticated: false,
+            isLoading: false 
+          });
+        }
       },
     }),
     {

@@ -61,7 +61,7 @@ export function PasswordModal({ open, onOpenChange, user }: PasswordModalProps) 
     setIsLoading(true);
     
     try {
-      const result = updateUser(user.id, {
+      const result = await updateUser(user.id, {
         userPassword: values.newPassword,
       });
 
@@ -72,9 +72,9 @@ export function PasswordModal({ open, onOpenChange, user }: PasswordModalProps) 
         // 如果用户修改的是自己的密码，需要重新登录
         if (currentUser && currentUser.id === user.id) {
           // 显示提示信息并登出
-          setTimeout(() => {
+          setTimeout(async () => {
             alert('密码修改成功，请重新登录');
-            logout();
+            await logout();
           }, 100);
         }
       } else {

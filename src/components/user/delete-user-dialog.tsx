@@ -30,16 +30,16 @@ export function DeleteUserDialog({ open, onOpenChange, user }: DeleteUserDialogP
     setIsLoading(true);
     
     try {
-      const result = deleteUser(user.id);
+      const result = await deleteUser(user.id);
       
       if (result.success) {
         onOpenChange(false);
         
         // 如果删除的是当前用户自己，需要登出
         if (currentUser && currentUser.id === user.id) {
-          setTimeout(() => {
+          setTimeout(async () => {
             alert('账号已注销，即将退出登录');
-            logout();
+            await logout();
           }, 100);
         }
       } else {
@@ -123,7 +123,7 @@ export function DeleteUsersDialog({
     
     try {
       const userIds = users.map(u => u.id);
-      const result = deleteUsers(userIds);
+      const result = await deleteUsers(userIds);
       
       if (result.success) {
         onOpenChange(false);
@@ -131,9 +131,9 @@ export function DeleteUsersDialog({
         // 检查是否删除了当前用户自己
         const deletedSelf = currentUser && userIds.includes(currentUser.id);
         if (deletedSelf) {
-          setTimeout(() => {
+          setTimeout(async () => {
             alert('账号已注销，即将退出登录');
-            logout();
+            await logout();
           }, 100);
         } else {
           onSuccess?.();
