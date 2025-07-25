@@ -21,10 +21,10 @@ export const useAuthStore = create<AuthState>()(
       },
       login: (params: UserLoginRequest) => {
         const user: User = {
-          id: 0,
-          userName: 'user',
+          id: 1,
+          userName: '管理员',
           userAccount: params.userAccount,
-          userRole: 'user',
+          userRole: 'admin',
         };
         set({ user, isAuthenticated: true });
       },
