@@ -15,7 +15,7 @@ import type { User } from '@/types/auth';
 
 interface DeleteUserDialogProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: (_open: boolean) => void;
   user: User | null;
 }
 
@@ -28,22 +28,16 @@ export function DeleteUserDialog({ open, onOpenChange, user }: DeleteUserDialogP
     if (!user) return;
 
     setIsLoading(true);
-    
+
     try {
-      const result = deleteUser(user.id);
-      
-      if (result.success) {
-        onOpenChange(false);
-        
-        // 如果删除的是当前用户自己，需要登出
-        if (currentUser && currentUser.id === user.id) {
-          setTimeout(() => {
-            alert('账号已注销，即将退出登录');
-            logout();
-          }, 100);
-        }
-      } else {
-        console.error(result.message);
+      await deleteUser(user.id);
+      onOpenChange(false);
+      // 如果删除的是当前用户自己，需要登出
+      if (currentUser && currentUser.id === user.id) {
+        setTimeout(async () => {
+          alert('账号已注销，即将退出登录');
+          await logout();
+        }, 100);
       }
     } catch (error) {
       console.error('删除用户失败:', error);
@@ -58,9 +52,7 @@ export function DeleteUserDialog({ open, onOpenChange, user }: DeleteUserDialogP
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            {isOwnAccount ? '注销账号' : '删除用户'}
-          </AlertDialogTitle>
+          <AlertDialogTitle>{isOwnAccount ? '注销账号' : '删除用户'}</AlertDialogTitle>
           <AlertDialogDescription>
             {isOwnAccount ? (
               <>
@@ -82,15 +74,13 @@ export function DeleteUserDialog({ open, onOpenChange, user }: DeleteUserDialogP
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>
-            取消
-          </AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoading}>取消</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
             disabled={isLoading}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isLoading ? '处理中...' : (isOwnAccount ? '确认注销' : '确认删除')}
+            {isLoading ? '处理中...' : isOwnAccount ? '确认注销' : '确认删除'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -101,17 +91,12 @@ export function DeleteUserDialog({ open, onOpenChange, user }: DeleteUserDialogP
 // 批量删除对话框
 interface DeleteUsersDialogProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: (_open: boolean) => void;
   users: User[];
   onSuccess?: () => void;
 }
 
-export function DeleteUsersDialog({ 
-  open, 
-  onOpenChange, 
-  users, 
-  onSuccess 
-}: DeleteUsersDialogProps) {
+export function DeleteUsersDialog({ open, onOpenChange, users }: DeleteUsersDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { deleteUsers } = useUserStore();
   const { user: currentUser, logout } = useAuthStore();
@@ -120,26 +105,19 @@ export function DeleteUsersDialog({
     if (users.length === 0) return;
 
     setIsLoading(true);
-    
+
     try {
-      const userIds = users.map(u => u.id);
-      const result = deleteUsers(userIds);
-      
-      if (result.success) {
-        onOpenChange(false);
-        
-        // 检查是否删除了当前用户自己
-        const deletedSelf = currentUser && userIds.includes(currentUser.id);
-        if (deletedSelf) {
-          setTimeout(() => {
-            alert('账号已注销，即将退出登录');
-            logout();
-          }, 100);
-        } else {
-          onSuccess?.();
-        }
-      } else {
-        console.error(result.message);
+      const userIds = users.map((u) => u.id);
+      await deleteUsers(userIds);
+      onOpenChange(false);
+
+      // 检查是否删除了当前用户自己
+      const deletedSelf = currentUser && userIds.includes(currentUser.id);
+      if (deletedSelf) {
+        setTimeout(async () => {
+          alert('账号已注销，即将退出登录');
+          await logout();
+        }, 100);
       }
     } catch (error) {
       console.error('批量删除用户失败:', error);
@@ -148,7 +126,7 @@ export function DeleteUsersDialog({
     }
   };
 
-  const includesSelf = currentUser && users.some(u => u.id === currentUser.id);
+  const includesSelf = currentUser && users.some((u) => u.id === currentUser.id);
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -170,9 +148,7 @@ export function DeleteUsersDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>
-            取消
-          </AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoading}>取消</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
             disabled={isLoading || users.length === 0}

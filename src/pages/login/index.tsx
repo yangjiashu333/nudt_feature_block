@@ -74,13 +74,22 @@ export default function LoginPage() {
     });
   }, [isRegisterMode, form]);
 
-  function onSubmit(values: z.infer<typeof loginSchema> | z.infer<typeof registerSchema>) {
-    if (isRegisterMode) {
-      const registerValues = values as z.infer<typeof registerSchema>;
-      const { confirmPassword: _confirmPassword, ...registerData } = registerValues;
-      register(registerData as UserRegisterRequest);
-    } else {
-      login(values as UserLoginRequest);
+  async function onSubmit(values: z.infer<typeof loginSchema> | z.infer<typeof registerSchema>) {
+    try {
+      if (isRegisterMode) {
+        const registerValues = values as z.infer<typeof registerSchema>;
+        const { confirmPassword: _confirmPassword, ...registerData } = registerValues;
+        await register(registerData as UserRegisterRequest);
+
+        alert('注册成功！请登录');
+        setIsRegisterMode(false);
+        form.reset();
+      } else {
+        await login(values as UserLoginRequest);
+      }
+    } catch (error) {
+      console.error('操作失败:', error);
+      alert('操作失败，请重试');
     }
   }
 

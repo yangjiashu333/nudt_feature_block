@@ -45,12 +45,12 @@ type AddUserFormData = z.infer<typeof addUserSchema>;
 
 interface AddUserModalProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: (_open: boolean) => void;
 }
 
 export function AddUserModal({ open, onOpenChange }: AddUserModalProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const { addUser, isUserAccountExists } = useUserStore();
+  const { addUser } = useUserStore();
 
   const form = useForm<AddUserFormData>({
     resolver: zodResolver(addUserSchema),
@@ -64,33 +64,17 @@ export function AddUserModal({ open, onOpenChange }: AddUserModalProps) {
 
   const onSubmit = async (values: AddUserFormData) => {
     setIsLoading(true);
-    
-    try {
-      // 检查用户名是否已存在
-      if (isUserAccountExists(values.userAccount)) {
-        form.setError('userAccount', {
-          type: 'manual',
-          message: '用户名已存在',
-        });
-        setIsLoading(false);
-        return;
-      }
 
-      const result = addUser({
+    try {
+      await addUser({
         userAccount: values.userAccount,
         userName: values.userName,
         userPassword: values.userPassword,
         userRole: values.userRole as UserRole,
       });
 
-      if (result.success) {
-        form.reset();
-        onOpenChange(false);
-        // 可以在这里添加成功提示
-      } else {
-        // 处理错误
-        console.error(result.message);
-      }
+      form.reset();
+      onOpenChange(false);
     } catch (error) {
       console.error('添加用户失败:', error);
     } finally {
@@ -108,9 +92,7 @@ export function AddUserModal({ open, onOpenChange }: AddUserModalProps) {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>添加新用户</DialogTitle>
-          <DialogDescription>
-            创建一个新的用户账号。用户名必须唯一。
-          </DialogDescription>
+          <DialogDescription>创建一个新的用户账号。用户名必须唯一。</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -121,11 +103,7 @@ export function AddUserModal({ open, onOpenChange }: AddUserModalProps) {
                 <FormItem>
                   <FormLabel>用户名</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="请输入用户名"
-                      {...field}
-                      disabled={isLoading}
-                    />
+                    <Input placeholder="请输入用户名" {...field} disabled={isLoading} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -138,11 +116,7 @@ export function AddUserModal({ open, onOpenChange }: AddUserModalProps) {
                 <FormItem>
                   <FormLabel>昵称（可选）</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="请输入昵称"
-                      {...field}
-                      disabled={isLoading}
-                    />
+                    <Input placeholder="请输入昵称" {...field} disabled={isLoading} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -193,12 +167,7 @@ export function AddUserModal({ open, onOpenChange }: AddUserModalProps) {
               )}
             />
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleClose}
-                disabled={isLoading}
-              >
+              <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading}>
                 取消
               </Button>
               <Button type="submit" disabled={isLoading}>

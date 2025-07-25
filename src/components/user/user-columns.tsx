@@ -8,91 +8,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import type { User, UserRole } from '@/types/auth';
-import { useState } from 'react';
-import { useUserStore } from '@/models/user';
-
-// 内联编辑昵称组件
-function EditableUserName({ user }: { user: User }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(user.userName);
-  const { updateUser } = useUserStore();
-
-  const handleSave = () => {
-    if (editValue.trim() && editValue !== user.userName) {
-      updateUser(user.id, { userName: editValue.trim() });
-    }
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setEditValue(user.userName);
-    setIsEditing(false);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSave();
-    } else if (e.key === 'Escape') {
-      handleCancel();
-    }
-  };
-
-  if (isEditing) {
-    return (
-      <Input
-        value={editValue}
-        onChange={(e) => setEditValue(e.target.value)}
-        onBlur={handleSave}
-        onKeyDown={handleKeyDown}
-        className="h-8 text-sm"
-        autoFocus
-      />
-    );
-  }
-
-  return (
-    <div
-      className="cursor-pointer hover:bg-muted/50 px-2 py-1 rounded min-h-[24px] flex items-center"
-      onClick={() => setIsEditing(true)}
-      title="点击编辑昵称"
-    >
-      {user.userName}
-    </div>
-  );
-}
-
-// 角色选择组件
-function RoleSelect({ user }: { user: User }) {
-  const { updateUser } = useUserStore();
-
-  const handleRoleChange = (newRole: UserRole) => {
-    if (newRole !== user.userRole) {
-      updateUser(user.id, { userRole: newRole });
-    }
-  };
-
-  return (
-    <Select value={user.userRole} onValueChange={handleRoleChange}>
-      <SelectTrigger className="w-24 h-8">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="admin">管理员</SelectItem>
-        <SelectItem value="user">用户</SelectItem>
-        <SelectItem value="ban">禁用</SelectItem>
-      </SelectContent>
-    </Select>
-  );
-}
+import type { User } from '@/types/auth';
+import EditableUserName from './editable-user-name';
+import RoleSelect from './role-select';
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -100,8 +18,7 @@ export const columns: ColumnDef<User>[] = [
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"

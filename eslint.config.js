@@ -22,13 +22,7 @@ export default tseslint.config([
       globals: globals.browser,
     },
     rules: {
-      'no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-        },
-      ],
+      'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -42,7 +36,6 @@ export default tseslint.config([
     files: ['src/components/ui/**/*.{ts,tsx}'],
     rules: {
       'react-refresh/only-export-components': 'off',
-      'no-unused-vars': 'off',
     },
   },
 ]);
