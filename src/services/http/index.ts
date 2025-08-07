@@ -1,123 +1,109 @@
-import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
+import axios, { type AxiosInstance, type AxiosResponse, type AxiosError } from 'axios';
 import { useAuthStore } from '@/models/auth';
-import { tokenManager } from '@/services/token';
 import { apiConfig } from '@/config/env';
-import type { RequestConfig } from './types';
+import { toast } from 'sonner';
+import type { RequestConfig, ApiError } from './types';
 
-// 创建axios实例
 const http: AxiosInstance = axios.create({
   baseURL: apiConfig.baseUrl,
   timeout: apiConfig.timeout,
+  withCredentials: true, // 启用cookie认证
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// 请求拦截器
-http.interceptors.request.use(
-  (config) => {
-    const customConfig = config as RequestConfig;
-
-    // 如果不跳过认证，自动添加token
-    if (!customConfig.skipAuth) {
-      const token = tokenManager.getToken();
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+/**
+ * 获取错误信息
+ */
+function getErrorMessage(error: AxiosError): string {
+  if (error.response) {
+    const { status } = error.response;
+    switch (status) {
+      case 401:
+        return '登录已过期，请重新登录';
+      case 403:
+        return '没有权限访问该资源';
+      case 404:
+        return '请求的资源不存在';
+      case 500:
+        return '服务器内部错误';
+      default:
+        return `请求失败 (${status})`;
     }
-
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+  } else if (error.request) {
+    return '网络连接失败，请检查网络';
+  } else {
+    return error.message || '未知错误';
   }
-);
+}
+
+/**
+ * 获取错误代码
+ */
+function getErrorCode(error: AxiosError): string {
+  if (error.response) {
+    return `HTTP_${error.response.status}`;
+  } else if (error.request) {
+    return 'NETWORK_ERROR';
+  } else {
+    return 'UNKNOWN_ERROR';
+  }
+}
 
 // 响应拦截器
 http.interceptors.response.use(
   (response: AxiosResponse) => {
-    // 直接返回data，符合你的需求
     return response.data;
   },
   (error) => {
     const customConfig = error.config as RequestConfig;
 
-    // 如果跳过错误处理，直接抛出
-    if (customConfig?.skipErrorHandler) {
-      return Promise.reject(error);
-    }
-
-    // 统一错误处理
-    let errorMessage = '请求失败';
-
-    if (error.response) {
-      const { status, data } = error.response;
-
-      switch (status) {
-        case 401: {
-          errorMessage = '登录已过期，请重新登录';
-          tokenManager.clearToken();
-          const { logout } = useAuthStore.getState();
-          logout();
-          break;
-        }
-        case 403:
-          errorMessage = '没有权限访问该资源';
-          break;
-        case 404:
-          errorMessage = '请求的资源不存在';
-          break;
-        case 500:
-          errorMessage = '服务器内部错误';
-          break;
-        default:
-          errorMessage = data?.message || `请求失败 (${status})`;
-      }
-    } else if (error.request) {
-      errorMessage = '网络连接失败，请检查网络';
-    } else {
-      errorMessage = error.message || '未知错误';
-    }
-
-    // 使用alert显示错误
-    alert(errorMessage);
-
-    return Promise.reject({
-      message: errorMessage,
+    const apiError: ApiError = {
+      message: getErrorMessage(error),
+      code: getErrorCode(error),
       status: error.response?.status,
       details: error.response?.data,
-    });
+      original: error,
+    };
+
+    if (error.response?.status === 401) {
+      // Session Cookie由服务器管理，前端只需要清除状态
+      const { logout } = useAuthStore.getState();
+      logout();
+    }
+
+    if (customConfig?.customErrorHandler) {
+      customConfig.customErrorHandler(apiError);
+    } else if (!customConfig?.silentError && !customConfig?.skipErrorHandler) {
+      toast.error(apiError.message);
+    }
+
+    return Promise.reject(apiError);
   }
 );
 
 // 基础HTTP方法封装
 export const httpService = {
-  // GET请求
   get<T = unknown>(url: string, config?: RequestConfig): Promise<T> {
     return http.get(url, config);
   },
 
-  // POST请求
   post<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     return http.post(url, data, config);
   },
 
-  // PUT请求
   put<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     return http.put(url, data, config);
   },
 
-  // DELETE请求
   delete<T = unknown>(url: string, config?: RequestConfig): Promise<T> {
     return http.delete(url, config);
   },
 
-  // PATCH请求
   patch<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     return http.patch(url, data, config);
   },
 };
-
-// 导出axios实例（如果需要直接使用）
 export { http };
 export default httpService;

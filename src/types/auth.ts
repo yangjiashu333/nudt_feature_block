@@ -27,6 +27,7 @@ export interface UserLoginRequest {
 
 export type UserLoginReply = CommonReply & {
   user: User;
+  // Session Cookie认证不需要返回token
 };
 
 // Model

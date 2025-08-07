@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import type { UserLoginRequest, UserRegisterRequest } from '@/types/auth';
 
 const loginSchema = z.object({
@@ -81,15 +82,18 @@ export default function LoginPage() {
         const { confirmPassword: _confirmPassword, ...registerData } = registerValues;
         await register(registerData as UserRegisterRequest);
 
-        alert('注册成功！请登录');
+        // 注册成功后的业务逻辑
+        toast.success('注册成功！请登录');
         setIsRegisterMode(false);
         form.reset();
       } else {
         await login(values as UserLoginRequest);
+        // 登录成功后会通过useEffect自动跳转到首页
       }
     } catch (error) {
+      // HTTP层已经处理了错误显示
+      // 这里只处理特殊的业务逻辑（如果有的话）
       console.error('操作失败:', error);
-      alert('操作失败，请重试');
     }
   }
 

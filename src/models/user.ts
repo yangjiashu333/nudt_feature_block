@@ -28,7 +28,7 @@ export const useUserStore = create<UserState>((set, _get) => ({
     set({ isLoading: true });
     try {
       const users = await userApi.getUserList();
-      set({ users, isLoading: false });
+      set({ users });
     } finally {
       set({ isLoading: false });
     }
@@ -45,7 +45,7 @@ export const useUserStore = create<UserState>((set, _get) => ({
       });
       // 重新获取用户列表
       const users = await userApi.getUserList();
-      set({ users, isLoading: false });
+      set({ users });
     } finally {
       set({ isLoading: false });
     }
@@ -56,7 +56,7 @@ export const useUserStore = create<UserState>((set, _get) => ({
     try {
       await userApi.updateUser(id, updates);
       const users = await userApi.getUserList();
-      set({ users, isLoading: false });
+      set({ users });
     } finally {
       set({ isLoading: false });
     }
@@ -67,7 +67,7 @@ export const useUserStore = create<UserState>((set, _get) => ({
     try {
       await userApi.deleteUser(id);
       const users = await userApi.getUserList();
-      set({ users, isLoading: false });
+      set({ users });
     } finally {
       set({ isLoading: false });
     }
@@ -78,7 +78,7 @@ export const useUserStore = create<UserState>((set, _get) => ({
     try {
       await userApi.deleteUsers(ids);
       const users = await userApi.getUserList();
-      set({ users, isLoading: false });
+      set({ users });
     } finally {
       set({ isLoading: false });
     }

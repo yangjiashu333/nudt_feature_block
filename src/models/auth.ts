@@ -45,6 +45,8 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         try {
           await authApi.logout();
+        } catch (error) {
+          console.warn('Logout API failed, but continuing with local cleanup:', error);
         } finally {
           set({
             user: null,

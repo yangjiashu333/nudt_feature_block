@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import '@/index.css';
 import Layout from '@/layouts/root-layout';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
+import { Toaster } from '@/components/ui/sonner';
 import LoginPage from './pages/login';
 import Dataset from './pages/dataset';
 import Feature from './pages/feature';
@@ -20,6 +21,7 @@ createRoot(document.getElementById('root')!).render(
         </Route>
         <Route path="/login" element={<LoginPage />}></Route>
       </Routes>
+      <Toaster />
     </BrowserRouter>
   </StrictMode>
 );
