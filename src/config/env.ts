@@ -3,13 +3,15 @@ class ApiConfig {
   public readonly baseUrl: string;
   public readonly timeout: number;
   public readonly isDevelopment: boolean;
+  public readonly enableMSW: boolean;
 
   constructor() {
     // 验证必需的环境变量
     this.validateRequiredEnvVars();
 
     // 初始化API配置
-    this.baseUrl = import.meta.env.VITE_API_BASE_URL;
+    this.enableMSW = import.meta.env.VITE_ENABLE_MSW === 'true';
+    this.baseUrl = this.enableMSW ? 'http://localhost:3000' : import.meta.env.VITE_API_BASE_URL;
     this.timeout = this.getTimeout();
     this.isDevelopment = import.meta.env.MODE === 'development';
 
@@ -21,8 +23,10 @@ class ApiConfig {
    * 验证必需的环境变量
    */
   private validateRequiredEnvVars(): void {
-    if (!import.meta.env.VITE_API_BASE_URL) {
-      throw new Error('缺少必需的环境变量: VITE_API_BASE_URL');
+    const enableMSW = import.meta.env.VITE_ENABLE_MSW === 'true';
+
+    if (!enableMSW && !import.meta.env.VITE_API_BASE_URL) {
+      throw new Error('缺少必需的环境变量: VITE_API_BASE_URL (MSW 模式下可选)');
     }
   }
 
@@ -41,10 +45,12 @@ class ApiConfig {
    * 验证API URL格式
    */
   private validateApiUrl(): void {
-    try {
-      new URL(this.baseUrl);
-    } catch {
-      throw new Error(`API Base URL 格式无效: ${this.baseUrl}`);
+    if (!this.enableMSW) {
+      try {
+        new URL(this.baseUrl);
+      } catch {
+        throw new Error(`API Base URL 格式无效: ${this.baseUrl}`);
+      }
     }
   }
 

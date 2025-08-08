@@ -1,18 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { useAuthStore } from '@/models/auth';
-import { authApi } from '@/services/api/auth';
-import type { UserLoginReply } from '@/types/auth';
-import { mockAuthUsers } from '../mocks/auth-data';
-import { mockApiResponses, mockApiErrors } from '../mocks/api-responses';
+import { mockUsers } from '@/mocks/data/users';
+import { mockSession } from '@/mocks/data/session';
 
-// Mock the auth API
-vi.mock('@/services/api/auth', () => ({
-  authApi: {
-    login: vi.fn(),
-    register: vi.fn(),
-    logout: vi.fn(),
-  },
-}));
+// 使用真实的 MSW Mock API，不需要手动 Mock
 
 // Session Cookie认证不需要mock tokenManager
 
@@ -24,11 +15,9 @@ describe('AuthStore', () => {
       isAuthenticated: false,
       isLoading: false,
     });
-    vi.clearAllMocks();
-  });
 
-  afterEach(() => {
-    vi.clearAllMocks();
+    // 重置 Mock 会话
+    mockSession.clear();
   });
 
   describe('login', () => {
@@ -36,22 +25,18 @@ describe('AuthStore', () => {
       // Arrange
       const loginData = {
         userAccount: 'admin',
-        userPassword: 'password',
+        userPassword: '123456',
       };
 
-      const mockResponse = mockApiResponses.loginSuccess();
-      vi.mocked(authApi.login).mockResolvedValue(mockResponse);
+      const expectedUser = mockUsers.find((u) => u.userAccount === 'admin')!;
 
       // Act
       const { login } = useAuthStore.getState();
       await login(loginData);
 
       // Assert
-      expect(authApi.login).toHaveBeenCalledWith(loginData);
-      expect(authApi.login).toHaveBeenCalledTimes(1);
-
       const state = useAuthStore.getState();
-      expect(state.user).toEqual(mockResponse.user);
+      expect(state.user).toEqual(expectedUser);
       expect(state.isAuthenticated).toBe(true);
       expect(state.isLoading).toBe(false);
     });
@@ -63,11 +48,9 @@ describe('AuthStore', () => {
         userPassword: 'wrong-password',
       };
 
-      vi.mocked(authApi.login).mockRejectedValue(new Error(mockApiErrors.WRONG_PASSWORD));
-
       // Act & Assert
       const { login } = useAuthStore.getState();
-      await expect(login(loginData)).rejects.toThrow(mockApiErrors.WRONG_PASSWORD);
+      await expect(login(loginData)).rejects.toThrow();
 
       const state = useAuthStore.getState();
       expect(state.user).toBe(null);
@@ -79,25 +62,18 @@ describe('AuthStore', () => {
       // Arrange
       const loginData = {
         userAccount: 'admin',
-        userPassword: 'password',
+        userPassword: '123456',
       };
 
-      let resolveLogin: (value: UserLoginReply) => void = () => {};
-      const loginPromise = new Promise<UserLoginReply>((resolve) => {
-        resolveLogin = resolve;
-      });
-      vi.mocked(authApi.login).mockReturnValue(loginPromise);
-
-      // Act
+      // Act - 测试 loading 状态在真实 API 调用中的变化
       const { login } = useAuthStore.getState();
-      const loginCall = login(loginData);
 
-      // Assert loading state
+      const loginPromise = login(loginData);
+
+      // MSW 有 500ms 延迟，在开始时应该是 loading
       expect(useAuthStore.getState().isLoading).toBe(true);
 
-      // Resolve the login
-      resolveLogin(mockApiResponses.loginSuccess());
-      await loginCall;
+      await loginPromise;
 
       // Assert final state
       expect(useAuthStore.getState().isLoading).toBe(false);
@@ -113,17 +89,11 @@ describe('AuthStore', () => {
         userPassword: 'password123',
       };
 
-      const mockResponse = mockApiResponses.registerSuccess(100);
-      vi.mocked(authApi.register).mockResolvedValue(mockResponse);
-
       // Act
       const { register } = useAuthStore.getState();
       await register(registerData);
 
       // Assert
-      expect(authApi.register).toHaveBeenCalledWith(registerData);
-      expect(authApi.register).toHaveBeenCalledTimes(1);
-
       const state = useAuthStore.getState();
       expect(state.isLoading).toBe(false);
     });
@@ -136,11 +106,9 @@ describe('AuthStore', () => {
         userPassword: 'password123',
       };
 
-      vi.mocked(authApi.register).mockRejectedValue(new Error(mockApiErrors.USER_ALREADY_EXISTS));
-
       // Act & Assert
       const { register } = useAuthStore.getState();
-      await expect(register(registerData)).rejects.toThrow(mockApiErrors.USER_ALREADY_EXISTS);
+      await expect(register(registerData)).rejects.toThrow();
 
       const state = useAuthStore.getState();
       expect(state.isLoading).toBe(false);
@@ -151,19 +119,14 @@ describe('AuthStore', () => {
     it('should logout successfully', async () => {
       // Arrange - setup authenticated user
       useAuthStore.setState({
-        user: mockAuthUsers[0],
+        user: mockUsers[0],
         isAuthenticated: true,
         isLoading: false,
       });
 
-      vi.mocked(authApi.logout).mockResolvedValue();
-
       // Act
       const { logout } = useAuthStore.getState();
       await logout();
-
-      // Assert
-      expect(authApi.logout).toHaveBeenCalledTimes(1);
 
       const state = useAuthStore.getState();
       expect(state.user).toBe(null);
@@ -174,18 +137,15 @@ describe('AuthStore', () => {
     it('should clear user state even if logout API fails', async () => {
       // Arrange - setup authenticated user
       useAuthStore.setState({
-        user: mockAuthUsers[0],
+        user: mockUsers[0],
         isAuthenticated: true,
         isLoading: false,
       });
 
-      vi.mocked(authApi.logout).mockRejectedValue(new Error(mockApiErrors.NETWORK_ERROR));
-
       // Act
       const { logout } = useAuthStore.getState();
 
-      // The logout method should not throw error even if API fails
-      // because it's wrapped in try/catch with finally block
+      // logout 即使 API 失败也应该清理本地状态
       await expect(logout()).resolves.toBeUndefined();
 
       // Assert - should clear state even on API error

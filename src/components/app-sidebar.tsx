@@ -23,21 +23,30 @@ const items = [
     title: '数据集',
     url: '/dataset',
     icon: Database,
+    roles: ['admin', 'user'],
   },
   {
     title: '特征算子',
     url: '/feature',
     icon: ImagePlus,
+    roles: ['admin', 'user'],
   },
   {
     title: '用户管理',
     url: '/user',
     icon: Users,
+    roles: ['admin'],
   },
 ];
 
 export function AppSidebar() {
   const { user, isAuthenticated, logout } = useAuthStore();
+
+  // 过滤有权限的菜单项
+  const accessibleItems = items.filter((item) => {
+    if (!isAuthenticated || !user) return false;
+    return item.roles.includes(user.userRole);
+  });
 
   return (
     <Sidebar>
@@ -65,7 +74,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {accessibleItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <NavLink to={item.url}>
                     {({ isActive }) => (

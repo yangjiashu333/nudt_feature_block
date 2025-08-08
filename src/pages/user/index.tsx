@@ -42,24 +42,26 @@ import { columns } from '@/components/user/user-columns';
 import { AddUserModal } from '@/components/user/add-user-modal';
 import { PasswordModal } from '@/components/user/password-modal';
 import { DeleteUserDialog, DeleteUsersDialog } from '@/components/user/delete-user-dialog';
-import type { User } from '@/types/auth';
 
 export default function UserManagement() {
   const navigate = useNavigate();
   const { user: currentUser, isAuthenticated } = useAuthStore();
-  const { getUserList, users } = useUserStore();
+  const {
+    users,
+    getUserList,
+    selectedUser,
+    addUserModalOpen,
+    passwordModalOpen,
+    deleteUserModalOpen,
+    deleteUsersModalOpen,
+    openModal,
+    closeModal,
+  } = useUserStore();
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-
-  // Modal states
-  const [addUserModalOpen, setAddUserModalOpen] = useState(false);
-  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [batchDeleteDialogOpen, setBatchDeleteDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   // 获取用户列表
   useEffect(() => {
@@ -107,35 +109,6 @@ export default function UserManagement() {
     },
   });
 
-  // 监听自定义事件
-  useEffect(() => {
-    const handleOpenPasswordModal = (event: CustomEvent) => {
-      setSelectedUser(event.detail);
-      setPasswordModalOpen(true);
-    };
-
-    const handleOpenDeleteDialog = (event: CustomEvent) => {
-      setSelectedUser(event.detail);
-      setDeleteDialogOpen(true);
-    };
-
-    window.addEventListener('openPasswordModal', handleOpenPasswordModal as EventListener);
-    window.addEventListener('openDeleteDialog', handleOpenDeleteDialog as EventListener);
-
-    return () => {
-      window.removeEventListener('openPasswordModal', handleOpenPasswordModal as EventListener);
-      window.removeEventListener('openDeleteDialog', handleOpenDeleteDialog as EventListener);
-    };
-  }, []);
-
-  // 批量删除
-  const handleBatchDelete = () => {
-    const selectedRows = table.getFilteredSelectedRowModel().rows;
-    if (selectedRows.length === 0) return;
-
-    setBatchDeleteDialogOpen(true);
-  };
-
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const selectedUsers = selectedRows.map((row) => row.original);
 
@@ -160,7 +133,7 @@ export default function UserManagement() {
             管理系统用户，包括添加、编辑、删除用户和设置角色权限
           </p>
         </div>
-        <Button onClick={() => setAddUserModalOpen(true)}>
+        <Button onClick={() => openModal('addUser')}>
           <Plus className="mr-2 h-4 w-4" />
           添加用户
         </Button>
@@ -190,7 +163,7 @@ export default function UserManagement() {
           </SelectContent>
         </Select>
         {selectedRows.length > 0 && (
-          <Button variant="destructive" size="sm" onClick={handleBatchDelete}>
+          <Button variant="destructive" size="sm" onClick={() => openModal('deleteUsers')}>
             <Trash2 className="mr-2 h-4 w-4" />
             删除选中 ({selectedRows.length})
           </Button>
@@ -310,20 +283,20 @@ export default function UserManagement() {
       </div>
 
       {/* Modals */}
-      <AddUserModal open={addUserModalOpen} onOpenChange={setAddUserModalOpen} />
+      <AddUserModal open={addUserModalOpen} onOpenChange={() => closeModal('addUser')} />
       <PasswordModal
         open={passwordModalOpen}
-        onOpenChange={setPasswordModalOpen}
+        onOpenChange={() => closeModal('password')}
         user={selectedUser}
       />
       <DeleteUserDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
+        open={deleteUserModalOpen}
+        onOpenChange={() => closeModal('deleteUser')}
         user={selectedUser}
       />
       <DeleteUsersDialog
-        open={batchDeleteDialogOpen}
-        onOpenChange={setBatchDeleteDialogOpen}
+        open={deleteUsersModalOpen}
+        onOpenChange={() => closeModal('deleteUsers')}
         users={selectedUsers}
         onSuccess={() => {
           setRowSelection({});

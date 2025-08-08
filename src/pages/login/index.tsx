@@ -81,25 +81,20 @@ export default function LoginPage() {
         const registerValues = values as z.infer<typeof registerSchema>;
         const { confirmPassword: _confirmPassword, ...registerData } = registerValues;
         await register(registerData as UserRegisterRequest);
-
-        // 注册成功后的业务逻辑
         toast.success('注册成功！请登录');
         setIsRegisterMode(false);
         form.reset();
       } else {
         await login(values as UserLoginRequest);
-        // 登录成功后会通过useEffect自动跳转到首页
       }
     } catch (error) {
-      // HTTP层已经处理了错误显示
-      // 这里只处理特殊的业务逻辑（如果有的话）
       console.error('操作失败:', error);
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
-      <Card className="w-full max-w-md shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-1">
+    <div className="min-h-screen flex items-center justify-center bg-secondary">
+      <Card className="w-full max-w-md shadow-xl rounded-2xl overflow-hidden">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center tracking-tight">
             {isRegisterMode ? '注册账号' : '登录到文档管理系统'}
@@ -130,9 +125,9 @@ export default function LoginPage() {
                   name="userName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>显示名称（可选）</FormLabel>
+                      <FormLabel>姓名</FormLabel>
                       <FormControl>
-                        <Input placeholder="请输入显示名称" {...field} />
+                        <Input placeholder="请输入姓名" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

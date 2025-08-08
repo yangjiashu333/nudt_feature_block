@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useUserStore } from '@/models/user';
 import type { User } from '@/types/auth';
 import EditableUserName from './editable-user-name';
 import RoleSelect from './role-select';
@@ -65,6 +66,7 @@ export const columns: ColumnDef<User>[] = [
     header: '操作',
     cell: ({ row }) => {
       const user = row.original;
+      const { openModal } = useUserStore.getState();
 
       return (
         <DropdownMenu>
@@ -77,8 +79,7 @@ export const columns: ColumnDef<User>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               onClick={() => {
-                // 触发密码修改Modal
-                window.dispatchEvent(new CustomEvent('openPasswordModal', { detail: user }));
+                openModal('password', user);
               }}
             >
               <Key className="mr-2 h-4 w-4" />
@@ -87,8 +88,7 @@ export const columns: ColumnDef<User>[] = [
             <DropdownMenuItem
               className="text-destructive"
               onClick={() => {
-                // 触发删除确认Dialog
-                window.dispatchEvent(new CustomEvent('openDeleteDialog', { detail: user }));
+                openModal('deleteUser', user);
               }}
             >
               <Trash2 className="mr-2 h-4 w-4" />

@@ -112,3 +112,4 @@ The application supports role-based access (user, admin, ban) for collaborative 
 - 生成的代码只保留必要的注释
 - 生成的代码不使用any类型，都要进行eslint检查和typescript类型检查
 - 对model层进行修改或新增时必须进行测试，测试覆盖率必须超过80%
+- 在types中创建或修改数据类型和DTO时，自动修改model逻辑、mock数据和单元测试
