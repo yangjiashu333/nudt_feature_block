@@ -9,7 +9,7 @@ import { mockPasswords, findUserByAccount, createUser } from '../data/users';
 import { mockSession } from '../data/session';
 
 export const authHandlers = [
-  http.post('*/api/auth/login', async ({ request }) => {
+  http.post('*/api/user/login', async ({ request }) => {
     const { userAccount, userPassword } = (await request.json()) as UserLoginRequest;
 
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -43,7 +43,7 @@ export const authHandlers = [
     });
   }),
 
-  http.post('*/api/auth/register', async ({ request }) => {
+  http.post('*/api/user/register', async ({ request }) => {
     const { userAccount, userName, userPassword } = (await request.json()) as UserRegisterRequest;
 
     await new Promise((resolve) => setTimeout(resolve, 800));
@@ -67,7 +67,7 @@ export const authHandlers = [
     return HttpResponse.json(response);
   }),
 
-  http.post('*/api/auth/logout', async () => {
+  http.post('*/api/user/logout', async () => {
     await new Promise((resolve) => setTimeout(resolve, 200));
 
     mockSession.clear();
@@ -80,22 +80,5 @@ export const authHandlers = [
         },
       }
     );
-  }),
-
-  http.get('*/api/auth/me', async () => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    const currentUser = mockSession.getCurrentUser();
-
-    if (!currentUser) {
-      return HttpResponse.json({ code: 40001, message: '未登录或登录已过期' }, { status: 401 });
-    }
-
-    const response: UserLoginReply = {
-      message: '获取用户信息成功',
-      user: currentUser,
-    };
-
-    return HttpResponse.json(response);
   }),
 ];

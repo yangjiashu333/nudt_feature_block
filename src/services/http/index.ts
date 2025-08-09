@@ -68,14 +68,13 @@ http.interceptors.response.use(
     };
 
     if (error.response?.status === 401) {
-      // Session Cookie由服务器管理，前端只需要清除状态
       const { logout } = useAuthStore.getState();
       logout();
     }
 
     if (customConfig?.customErrorHandler) {
       customConfig.customErrorHandler(apiError);
-    } else if (!customConfig?.silentError && !customConfig?.skipErrorHandler) {
+    } else if (!customConfig?.silentError) {
       toast.error(apiError.message);
     }
 
