@@ -1,4 +1,5 @@
 import { useUserStore } from '@/models/user';
+import { useAuthStore } from '@/models/auth';
 import type { User } from '@/types/auth';
 import { useState } from 'react';
 import { Input } from '../ui/input';
@@ -8,6 +9,9 @@ export default function EditableUserName({ user }: { user: User }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(user.userName || '');
   const { updateUser } = useUserStore();
+  const currentUser = useAuthStore((state) => state.user);
+  const isAdmin = currentUser?.userRole === 'admin';
+  const canEdit = isAdmin || user.id === currentUser?.id;
 
   const handleSave = () => {
     if (editValue.trim() !== user.userName) {
@@ -40,6 +44,14 @@ export default function EditableUserName({ user }: { user: User }) {
           className="h-8 text-sm w-full"
           autoFocus
         />
+      </div>
+    );
+  }
+
+  if (!canEdit) {
+    return (
+      <div className="px-2 py-1 min-h-[24px] flex items-center w-full">
+        {user.userName || '-'}
       </div>
     );
   }

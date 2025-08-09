@@ -13,7 +13,6 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from '@/components/ui/sidebar';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from './ui/button';
 import { NavLink } from 'react-router';
 
@@ -35,7 +34,7 @@ const items = [
     title: '用户管理',
     url: '/user',
     icon: Users,
-    roles: ['admin'],
+    roles: ['admin', 'user'],
   },
 ];
 
@@ -53,15 +52,6 @@ export function AppSidebar() {
       {isAuthenticated && user && (
         <SidebarHeader className="p-4">
           <div className="flex items-center gap-2">
-            <Avatar>
-              <AvatarImage
-                src={`https://picsum.photos/seed/${user.userName}/200`}
-                alt={user.userName}
-              />
-              <AvatarFallback className="text-xl">
-                {user.userName?.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
             <div className="flex flex-col justify-center flex-1">
               <p className="font-medium">{user.userName}</p>
               <p className="text-sm text-muted-foreground">{user.userAccount}</p>

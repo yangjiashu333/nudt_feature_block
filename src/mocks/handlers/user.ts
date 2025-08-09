@@ -10,7 +10,7 @@ import { mockUsers, mockPasswords, findUserByAccount, createUser } from '../data
 import { mockSession } from '../data/session';
 
 export const userHandlers = [
-  http.get('*/api/users', async ({ request }) => {
+  http.get('*/api/user', async ({ request }) => {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     if (!mockSession.isAuthenticated()) {
@@ -61,7 +61,7 @@ export const userHandlers = [
     return HttpResponse.json(user);
   }),
 
-  http.post('*/api/users', async ({ request }) => {
+  http.post('*/api/user/register', async ({ request }) => {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     if (!mockSession.isAuthenticated()) {
@@ -73,14 +73,14 @@ export const userHandlers = [
       return HttpResponse.json({ message: '权限不足' }, { status: 403 });
     }
 
-    const data = (await request.json()) as UserRegisterRequest & { userRole: UserRole };
+    const data = (await request.json()) as UserRegisterRequest;
 
     if (findUserByAccount(data.userAccount)) {
       return HttpResponse.json({ message: '用户名已存在' }, { status: 400 });
     }
 
     const newUser = createUser(data.userAccount, data.userName || data.userAccount);
-    newUser.userRole = data.userRole || 'user';
+    newUser.userRole = 'user';
     mockPasswords[data.userAccount as keyof typeof mockPasswords] = data.userPassword;
 
     const response: UserRegisterReply = {
@@ -91,7 +91,7 @@ export const userHandlers = [
     return HttpResponse.json(response);
   }),
 
-  http.put('*/api/users/:id', async ({ params, request }) => {
+  http.put('*/api/user/:id', async ({ params, request }) => {
     await new Promise((resolve) => setTimeout(resolve, 400));
 
     if (!mockSession.isAuthenticated()) {

@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useUserStore } from '@/models/user';
+import { useAuthStore } from '@/models/auth';
 import type { User } from '@/types/auth';
 import EditableUserName from './editable-user-name';
 import RoleSelect from './role-select';
@@ -16,22 +17,36 @@ import RoleSelect from './role-select';
 export const columns: ColumnDef<User>[] = [
   {
     id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
+    header: ({ table }) => {
+      const currentUser = useAuthStore.getState().user;
+      const isAdmin = currentUser?.userRole === 'admin';
+      
+      if (!isAdmin) return null;
+      
+      return (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      );
+    },
+    cell: ({ row }) => {
+      const currentUser = useAuthStore.getState().user;
+      const isAdmin = currentUser?.userRole === 'admin';
+      
+      if (!isAdmin) return null;
+      
+      return (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      );
+    },
     enableSorting: false,
     enableHiding: false,
     size: 50,
@@ -60,7 +75,11 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'userRole',
     header: '角色',
-    cell: ({ row }) => <RoleSelect user={row.original} />,
+    cell: ({ row }) => {
+      const currentUser = useAuthStore.getState().user;
+      const isAdmin = currentUser?.userRole === 'admin';
+      return isAdmin ? <RoleSelect user={row.original} /> : <span className="text-sm text-muted-foreground">{row.original.userRole === 'admin' ? '管理员' : row.original.userRole === 'user' ? '用户' : '禁用'}</span>;
+    },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
@@ -72,6 +91,13 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const user = row.original;
       const { openModal } = useUserStore.getState();
+      const currentUser = useAuthStore.getState().user;
+      const isAdmin = currentUser?.userRole === 'admin';
+      const canEdit = isAdmin || user.id === currentUser?.id;
+
+      if (!canEdit) {
+        return null;
+      }
 
       return (
         <DropdownMenu>
@@ -90,14 +116,16 @@ export const columns: ColumnDef<User>[] = [
               <Key className="mr-2 h-4 w-4" />
               修改密码
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                openModal('deleteUser', user);
-              }}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              删除用户
-            </DropdownMenuItem>
+            {isAdmin && (
+              <DropdownMenuItem
+                onClick={() => {
+                  openModal('deleteUser', user);
+                }}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                删除用户
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );

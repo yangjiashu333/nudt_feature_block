@@ -73,14 +73,14 @@ export default function UserManagement() {
       }
     };
 
-    if (isAuthenticated && currentUser?.userRole === 'admin') {
+    if (isAuthenticated && currentUser) {
       loadUsers();
     }
   }, [isAuthenticated, currentUser, getUserList]);
 
-  // 权限验证：只有admin用户可以访问
+  // 权限验证：认证用户可以访问
   useEffect(() => {
-    if (!isAuthenticated || !currentUser || currentUser.userRole !== 'admin') {
+    if (!isAuthenticated || !currentUser) {
       navigate('/');
     }
   }, [isAuthenticated, currentUser, navigate]);
@@ -112,17 +112,12 @@ export default function UserManagement() {
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const selectedUsers = selectedRows.map((row) => row.original);
 
-  // 如果不是admin用户，显示权限不足
-  if (!isAuthenticated || !currentUser || currentUser.userRole !== 'admin') {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-2">权限不足</h2>
-          <p className="text-muted-foreground">只有管理员用户可以访问用户管理功能</p>
-        </div>
-      </div>
-    );
+  // 认证检查
+  if (!isAuthenticated || !currentUser) {
+    return null; // 被上面的useEffect重定向，这里不应该执行
   }
+
+  const isAdmin = currentUser.userRole === 'admin';
 
   return (
     <div className="p-6 space-y-6">
@@ -157,7 +152,7 @@ export default function UserManagement() {
               <SelectItem value="ban">禁用</SelectItem>
             </SelectContent>
           </Select>
-          {selectedRows.length > 0 && (
+          {isAdmin && selectedRows.length > 0 && (
             <Button variant="secondary" size="sm" onClick={() => openModal('deleteUsers')}>
               <Trash2 className="mr-2 h-4 w-4" />
               删除选中 ({selectedRows.length})
@@ -165,7 +160,9 @@ export default function UserManagement() {
           )}
         </div>
         <div className="flex items-center space-x-2">
-          <Button onClick={() => openModal('addUser')}>添加用户</Button>
+          {isAdmin && (
+            <Button onClick={() => openModal('addUser')}>添加用户</Button>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">

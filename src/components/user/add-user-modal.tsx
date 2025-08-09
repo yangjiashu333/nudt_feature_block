@@ -17,17 +17,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useUserStore } from '@/models/user';
-import type { UserRole } from '@/types/auth';
 
 const addUserSchema = z.object({
   userAccount: z.string().min(1, {
@@ -37,7 +29,6 @@ const addUserSchema = z.object({
   userPassword: z.string().min(6, {
     message: '密码至少需要6位',
   }),
-  userRole: z.enum(['admin', 'user', 'ban']),
 });
 
 type AddUserFormData = z.infer<typeof addUserSchema>;
@@ -57,7 +48,6 @@ export function AddUserModal({ open, onOpenChange }: AddUserModalProps) {
       userAccount: '',
       userName: '',
       userPassword: '',
-      userRole: 'user' as const,
     },
   });
 
@@ -69,7 +59,6 @@ export function AddUserModal({ open, onOpenChange }: AddUserModalProps) {
         userAccount: values.userAccount,
         userName: values.userName,
         userPassword: values.userPassword,
-        userRole: values.userRole as UserRole,
       });
 
       form.reset();
@@ -134,32 +123,6 @@ export function AddUserModal({ open, onOpenChange }: AddUserModalProps) {
                       disabled={isLoading}
                     />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="userRole"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>角色</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    disabled={isLoading}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="请选择角色" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="admin">管理员</SelectItem>
-                      <SelectItem value="user">用户</SelectItem>
-                      <SelectItem value="ban">禁用</SelectItem>
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

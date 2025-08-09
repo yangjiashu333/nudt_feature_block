@@ -109,6 +109,8 @@ The application supports role-based access (user, admin, ban) for collaborative 
 
 - 应用仅用于桌面端，不考虑移动端适配
 - 组件使用shadcn，图标使用lucide，样式使用shadcn定义的design token
+- 所有的标题和描述尽量简洁，使用字体粗细和颜色来区分功能，而不是使用字体大小来区分
+- 采用渐进式修改，不要一次修改太多
 - 生成的代码只保留必要的注释
 - 生成的代码不使用any类型，都要进行eslint检查和typescript类型检查
 - 对model层进行修改或新增时必须进行测试，测试覆盖率必须超过80%

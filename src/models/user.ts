@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { userApi } from '@/services/api/user';
 import type { User, UserRole } from '@/types/auth';
+import { useAuthStore } from '@/models/auth';
 
 type ModalType = 'addUser' | 'password' | 'deleteUser' | 'deleteUsers';
 
@@ -18,7 +19,6 @@ interface UserState {
     userAccount: string;
     userName?: string;
     userPassword: string;
-    userRole: UserRole;
   }) => Promise<void>;
   updateUser: (
     id: number,
@@ -43,7 +43,10 @@ export const useUserStore = create<UserState>((set) => ({
   getUserList: async () => {
     set({ isLoading: true });
     try {
-      const users = await userApi.getUserList();
+      const response = await userApi.getUserList();
+      // 如果是普通用户，只显示自己的信息
+      const currentUser = useAuthStore.getState().user;
+      const users = currentUser?.userRole === 'admin' ? response : response.filter(user => user.id === currentUser?.id);
       set({ users });
     } finally {
       set({ isLoading: false });
@@ -86,7 +89,7 @@ export const useUserStore = create<UserState>((set) => ({
   deleteUsers: async (ids) => {
     set({ isLoading: true });
     try {
-      await userApi.deleteUsers(ids);
+      await Promise.all(ids.map(id => userApi.deleteUser(id)));
       const users = await userApi.getUserList();
       set({ users });
     } finally {
