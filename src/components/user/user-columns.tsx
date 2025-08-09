@@ -34,24 +34,28 @@ export const columns: ColumnDef<User>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
+    size: 50,
   },
   {
     accessorKey: 'id',
     header: 'ID',
     cell: ({ row }) => <div className="w-[60px]">{row.getValue('id')}</div>,
+    size: 80,
   },
   {
     accessorKey: 'userAccount',
     header: '用户名',
     cell: ({ row }) => {
       const userAccount = row.getValue('userAccount') as string;
-      return <div className="font-medium">{userAccount}</div>;
+      return <div className="font-medium w-32">{userAccount}</div>;
     },
+    size: 100,
   },
   {
     accessorKey: 'userName',
-    header: '昵称',
+    header: '姓名',
     cell: ({ row }) => <EditableUserName user={row.original} />,
+    size: 100,
   },
   {
     accessorKey: 'userRole',
@@ -60,6 +64,7 @@ export const columns: ColumnDef<User>[] = [
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
+    size: 100,
   },
   {
     id: 'actions',
@@ -86,7 +91,6 @@ export const columns: ColumnDef<User>[] = [
               修改密码
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="text-destructive"
               onClick={() => {
                 openModal('deleteUser', user);
               }}
@@ -98,5 +102,6 @@ export const columns: ColumnDef<User>[] = [
         </DropdownMenu>
       );
     },
+    size: 80,
   },
 ];

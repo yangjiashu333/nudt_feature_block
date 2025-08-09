@@ -14,9 +14,22 @@ async function enableMocking() {
   if (!apiConfig.enableMSW) {
     return;
   }
-
   const { worker } = await import('@/mocks/browser');
-
+  const { mockSession } = await import('@/mocks/data/session');
+  const syncAuthState = () => {
+    const authStorage = localStorage.getItem('auth-storage');
+    if (authStorage) {
+      try {
+        const authState = JSON.parse(authStorage);
+        if (authState.state?.user && authState.state?.isAuthenticated) {
+          mockSession.setCurrentUser(authState.state.user);
+        }
+      } catch (error) {
+        console.warn('Failed to sync auth state from localStorage:', error);
+      }
+    }
+  };
+  syncAuthState();
   return worker.start({
     onUnhandledRequest: 'bypass',
   });

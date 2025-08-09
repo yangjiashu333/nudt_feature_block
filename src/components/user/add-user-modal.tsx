@@ -5,7 +5,6 @@ import * as z from 'zod';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -91,8 +90,7 @@ export function AddUserModal({ open, onOpenChange }: AddUserModalProps) {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>添加新用户</DialogTitle>
-          <DialogDescription>创建一个新的用户账号。用户名必须唯一。</DialogDescription>
+          <DialogTitle className="text-base font-semibold">添加新用户</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -114,9 +112,9 @@ export function AddUserModal({ open, onOpenChange }: AddUserModalProps) {
               name="userName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>昵称（可选）</FormLabel>
+                  <FormLabel>姓名</FormLabel>
                   <FormControl>
-                    <Input placeholder="请输入昵称" {...field} disabled={isLoading} />
+                    <Input placeholder="请输入姓名" {...field} disabled={isLoading} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

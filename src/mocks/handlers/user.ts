@@ -14,7 +14,7 @@ export const userHandlers = [
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     if (!mockSession.isAuthenticated()) {
-      return HttpResponse.json({ code: 40001, message: '未登录或登录已过期' }, { status: 401 });
+      return HttpResponse.json({ message: '未登录或登录已过期' }, { status: 401 });
     }
 
     const url = new URL(request.url);
@@ -48,14 +48,14 @@ export const userHandlers = [
     await new Promise((resolve) => setTimeout(resolve, 200));
 
     if (!mockSession.isAuthenticated()) {
-      return HttpResponse.json({ code: 40001, message: '未登录或登录已过期' }, { status: 401 });
+      return HttpResponse.json({ message: '未登录或登录已过期' }, { status: 401 });
     }
 
     const id = parseInt(params.id as string);
     const user = mockUsers.find((u) => u.id === id);
 
     if (!user) {
-      return HttpResponse.json({ code: 40004, message: '用户不存在' }, { status: 404 });
+      return HttpResponse.json({ message: '用户不存在' }, { status: 404 });
     }
 
     return HttpResponse.json(user);
@@ -65,18 +65,18 @@ export const userHandlers = [
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     if (!mockSession.isAuthenticated()) {
-      return HttpResponse.json({ code: 40001, message: '未登录或登录已过期' }, { status: 401 });
+      return HttpResponse.json({ message: '未登录或登录已过期' }, { status: 401 });
     }
 
     const currentUser = mockSession.getCurrentUser();
     if (currentUser?.userRole !== 'admin') {
-      return HttpResponse.json({ code: 40003, message: '权限不足' }, { status: 403 });
+      return HttpResponse.json({ message: '权限不足' }, { status: 403 });
     }
 
     const data = (await request.json()) as UserRegisterRequest & { userRole: UserRole };
 
     if (findUserByAccount(data.userAccount)) {
-      return HttpResponse.json({ code: 40000, message: '用户名已存在' }, { status: 400 });
+      return HttpResponse.json({ message: '用户名已存在' }, { status: 400 });
     }
 
     const newUser = createUser(data.userAccount, data.userName || data.userAccount);
@@ -95,7 +95,7 @@ export const userHandlers = [
     await new Promise((resolve) => setTimeout(resolve, 400));
 
     if (!mockSession.isAuthenticated()) {
-      return HttpResponse.json({ code: 40001, message: '未登录或登录已过期' }, { status: 401 });
+      return HttpResponse.json({ message: '未登录或登录已过期' }, { status: 401 });
     }
 
     const id = parseInt(params.id as string);
@@ -103,12 +103,12 @@ export const userHandlers = [
     const userIndex = mockUsers.findIndex((u) => u.id === id);
 
     if (userIndex === -1) {
-      return HttpResponse.json({ code: 40004, message: '用户不存在' }, { status: 404 });
+      return HttpResponse.json({ message: '用户不存在' }, { status: 404 });
     }
 
     const currentUser = mockSession.getCurrentUser();
     if (currentUser?.userRole !== 'admin' && currentUser?.id !== id) {
-      return HttpResponse.json({ code: 40003, message: '权限不足' }, { status: 403 });
+      return HttpResponse.json({ message: '权限不足' }, { status: 403 });
     }
 
     if (data.userName) {
@@ -129,18 +129,18 @@ export const userHandlers = [
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     if (!mockSession.isAuthenticated()) {
-      return HttpResponse.json({ code: 40001, message: '未登录或登录已过期' }, { status: 401 });
+      return HttpResponse.json({ message: '未登录或登录已过期' }, { status: 401 });
     }
 
     const currentUser = mockSession.getCurrentUser();
     if (currentUser?.userRole !== 'admin') {
-      return HttpResponse.json({ code: 40003, message: '权限不足' }, { status: 403 });
+      return HttpResponse.json({ message: '权限不足' }, { status: 403 });
     }
 
     const { ids } = (await request.json()) as { ids: number[] };
 
     if (ids.includes(currentUser.id)) {
-      return HttpResponse.json({ code: 40000, message: '不能删除自己' }, { status: 400 });
+      return HttpResponse.json({ message: '不能删除自己' }, { status: 400 });
     }
 
     const initialLength = mockUsers.length;
@@ -153,7 +153,6 @@ export const userHandlers = [
     const deletedCount = initialLength - mockUsers.length;
 
     return HttpResponse.json({
-      code: 0,
       message: `成功删除 ${deletedCount} 个用户`,
     });
   }),
@@ -162,28 +161,28 @@ export const userHandlers = [
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     if (!mockSession.isAuthenticated()) {
-      return HttpResponse.json({ code: 40001, message: '未登录或登录已过期' }, { status: 401 });
+      return HttpResponse.json({ message: '未登录或登录已过期' }, { status: 401 });
     }
 
     const currentUser = mockSession.getCurrentUser();
     if (currentUser?.userRole !== 'admin') {
-      return HttpResponse.json({ code: 40003, message: '权限不足' }, { status: 403 });
+      return HttpResponse.json({ message: '权限不足' }, { status: 403 });
     }
 
     const id = parseInt(params.id as string);
     const userIndex = mockUsers.findIndex((u) => u.id === id);
 
     if (userIndex === -1) {
-      return HttpResponse.json({ code: 40004, message: '用户不存在' }, { status: 404 });
+      return HttpResponse.json({ message: '用户不存在' }, { status: 404 });
     }
 
     if (mockUsers[userIndex].id === currentUser.id) {
-      return HttpResponse.json({ code: 40000, message: '不能删除自己' }, { status: 400 });
+      return HttpResponse.json({ message: '不能删除自己' }, { status: 400 });
     }
 
     mockUsers.splice(userIndex, 1);
 
-    return HttpResponse.json({ code: 0, message: '删除成功' });
+    return HttpResponse.json({ message: '删除成功' });
   }),
 
   http.get('*/api/users/check', async ({ request }) => {
@@ -194,7 +193,7 @@ export const userHandlers = [
     const excludeId = url.searchParams.get('excludeId');
 
     if (!userAccount) {
-      return HttpResponse.json({ code: 40000, message: '缺少用户账号参数' }, { status: 400 });
+      return HttpResponse.json({ message: '缺少用户账号参数' }, { status: 400 });
     }
 
     let exists = false;
@@ -211,7 +210,7 @@ export const userHandlers = [
     await new Promise((resolve) => setTimeout(resolve, 400));
 
     if (!mockSession.isAuthenticated()) {
-      return HttpResponse.json({ code: 40001, message: '未登录或登录已过期' }, { status: 401 });
+      return HttpResponse.json({ message: '未登录或登录已过期' }, { status: 401 });
     }
 
     const id = parseInt(params.id as string);
@@ -222,36 +221,36 @@ export const userHandlers = [
 
     const user = mockUsers.find((u) => u.id === id);
     if (!user) {
-      return HttpResponse.json({ code: 40004, message: '用户不存在' }, { status: 404 });
+      return HttpResponse.json({ message: '用户不存在' }, { status: 404 });
     }
 
     const currentUser = mockSession.getCurrentUser();
     if (currentUser?.userRole !== 'admin' && currentUser?.id !== id) {
-      return HttpResponse.json({ code: 40003, message: '权限不足' }, { status: 403 });
+      return HttpResponse.json({ message: '权限不足' }, { status: 403 });
     }
 
     if (currentUser?.id === id && oldPassword) {
       const currentPassword = mockPasswords[user.userAccount as keyof typeof mockPasswords];
       if (oldPassword !== currentPassword) {
-        return HttpResponse.json({ code: 40000, message: '原密码错误' }, { status: 400 });
+        return HttpResponse.json({ message: '原密码错误' }, { status: 400 });
       }
     }
 
     mockPasswords[user.userAccount as keyof typeof mockPasswords] = newPassword;
 
-    return HttpResponse.json({ code: 0, message: '密码修改成功' });
+    return HttpResponse.json({ message: '密码修改成功' });
   }),
 
   http.put('*/api/users/:id/role', async ({ params, request }) => {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     if (!mockSession.isAuthenticated()) {
-      return HttpResponse.json({ code: 40001, message: '未登录或登录已过期' }, { status: 401 });
+      return HttpResponse.json({ message: '未登录或登录已过期' }, { status: 401 });
     }
 
     const currentUser = mockSession.getCurrentUser();
     if (currentUser?.userRole !== 'admin') {
-      return HttpResponse.json({ code: 40003, message: '权限不足' }, { status: 403 });
+      return HttpResponse.json({ message: '权限不足' }, { status: 403 });
     }
 
     const id = parseInt(params.id as string);
@@ -259,11 +258,11 @@ export const userHandlers = [
 
     const userIndex = mockUsers.findIndex((u) => u.id === id);
     if (userIndex === -1) {
-      return HttpResponse.json({ code: 40004, message: '用户不存在' }, { status: 404 });
+      return HttpResponse.json({ message: '用户不存在' }, { status: 404 });
     }
 
     if (id === currentUser.id) {
-      return HttpResponse.json({ code: 40000, message: '不能修改自己的角色' }, { status: 400 });
+      return HttpResponse.json({ message: '不能修改自己的角色' }, { status: 400 });
     }
 
     mockUsers[userIndex].userRole = role;

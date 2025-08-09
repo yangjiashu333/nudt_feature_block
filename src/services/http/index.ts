@@ -38,19 +38,6 @@ function getErrorMessage(error: AxiosError): string {
   }
 }
 
-/**
- * 获取错误代码
- */
-function getErrorCode(error: AxiosError): string {
-  if (error.response) {
-    return `HTTP_${error.response.status}`;
-  } else if (error.request) {
-    return 'NETWORK_ERROR';
-  } else {
-    return 'UNKNOWN_ERROR';
-  }
-}
-
 // 响应拦截器
 http.interceptors.response.use(
   (response: AxiosResponse) => {
@@ -61,7 +48,6 @@ http.interceptors.response.use(
 
     const apiError: ApiError = {
       message: getErrorMessage(error),
-      code: getErrorCode(error),
       status: error.response?.status,
       details: error.response?.data,
       original: error,

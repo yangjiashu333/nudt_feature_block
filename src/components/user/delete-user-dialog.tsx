@@ -52,34 +52,25 @@ export function DeleteUserDialog({ open, onOpenChange, user }: DeleteUserDialogP
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{isOwnAccount ? '注销账号' : '删除用户'}</AlertDialogTitle>
+          <AlertDialogTitle className="text-base font-semibold">
+            {isOwnAccount ? '注销账号' : '删除用户'}
+          </AlertDialogTitle>
           <AlertDialogDescription>
             {isOwnAccount ? (
               <>
-                你确定要注销自己的账号吗？
-                <br />
-                <strong className="text-destructive">
-                  注销后将立即退出登录，且无法恢复此账号。
-                </strong>
+                确定要注销自己的账号吗？
+                <strong>注销后将立即退出登录，且无法恢复此账号。</strong>
               </>
             ) : (
               <>
-                你确定要删除用户 <strong>{user?.userName}</strong>（{user?.userAccount}）吗？
-                <br />
-                <strong className="text-destructive">
-                  此操作无法撤销，用户的所有数据将被永久删除。
-                </strong>
+                确定要删除用户 <strong>{user?.userName || user?.userAccount}</strong> 吗？
               </>
             )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>取消</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDelete}
-            disabled={isLoading}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          >
+          <AlertDialogAction onClick={handleDelete} disabled={isLoading}>
             {isLoading ? '处理中...' : isOwnAccount ? '确认注销' : '确认删除'}
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -132,28 +123,20 @@ export function DeleteUsersDialog({ open, onOpenChange, users }: DeleteUsersDial
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>批量删除用户</AlertDialogTitle>
+          <AlertDialogTitle className="text-base font-semibold">批量删除用户</AlertDialogTitle>
           <AlertDialogDescription>
-            你确定要删除选中的 <strong>{users.length}</strong> 个用户吗？
+            确定要删除选中的 <strong>{users.length}</strong> 个用户吗？
             <br />
             {includesSelf && (
-              <span className="text-destructive font-medium">
+              <span className="font-semibold">
                 注意：选中的用户中包含你自己的账号，删除后将立即退出登录。
               </span>
             )}
-            <br />
-            <strong className="text-destructive">
-              此操作无法撤销，所有选中用户的数据将被永久删除。
-            </strong>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>取消</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDelete}
-            disabled={isLoading || users.length === 0}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          >
+          <AlertDialogAction onClick={handleDelete} disabled={isLoading || users.length === 0}>
             {isLoading ? '删除中...' : '确认删除'}
           </AlertDialogAction>
         </AlertDialogFooter>

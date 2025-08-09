@@ -5,7 +5,6 @@ import * as z from 'zod';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -96,14 +95,9 @@ export function PasswordModal({ open, onOpenChange, user }: PasswordModalProps) 
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-base font-semibold">
             {isOwnPassword ? '修改我的密码' : `修改用户密码 - ${user?.userName}`}
           </DialogTitle>
-          <DialogDescription>
-            {isOwnPassword
-              ? '修改密码后需要重新登录系统。'
-              : '为用户设置新的登录密码。密码至少需要6位字符。'}
-          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

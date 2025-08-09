@@ -17,16 +17,16 @@ export const authHandlers = [
     const user = findUserByAccount(userAccount);
 
     if (!user) {
-      return HttpResponse.json({ code: 40001, message: '用户不存在' }, { status: 401 });
+      return HttpResponse.json({ message: '用户不存在' }, { status: 401 });
     }
 
     const correctPassword = mockPasswords[userAccount as keyof typeof mockPasswords];
     if (userPassword !== correctPassword) {
-      return HttpResponse.json({ code: 40001, message: '密码错误' }, { status: 401 });
+      return HttpResponse.json({ message: '密码错误' }, { status: 401 });
     }
 
     if (user.userRole === 'ban') {
-      return HttpResponse.json({ code: 40003, message: '账号已被禁用' }, { status: 403 });
+      return HttpResponse.json({ message: '账号已被禁用' }, { status: 403 });
     }
 
     mockSession.setCurrentUser(user);
@@ -49,11 +49,11 @@ export const authHandlers = [
     await new Promise((resolve) => setTimeout(resolve, 800));
 
     if (findUserByAccount(userAccount)) {
-      return HttpResponse.json({ code: 40000, message: '用户名已存在' }, { status: 400 });
+      return HttpResponse.json({ message: '用户名已存在' }, { status: 400 });
     }
 
     if (userPassword.length < 6) {
-      return HttpResponse.json({ code: 40000, message: '密码至少需要6位' }, { status: 400 });
+      return HttpResponse.json({ message: '密码至少需要6位' }, { status: 400 });
     }
 
     const newUser = createUser(userAccount, userName || userAccount);
@@ -73,7 +73,7 @@ export const authHandlers = [
     mockSession.clear();
 
     return HttpResponse.json(
-      { code: 0, message: '退出成功' },
+      { message: '退出成功' },
       {
         headers: {
           'Set-Cookie': 'session=; HttpOnly; Path=/; Max-Age=0',

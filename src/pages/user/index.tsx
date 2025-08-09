@@ -11,7 +11,7 @@ import {
   type SortingState,
   type VisibilityState,
 } from '@tanstack/react-table';
-import { Plus, ChevronDown, Trash2 } from 'lucide-react';
+import { ChevronDown, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -125,87 +125,86 @@ export default function UserManagement() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">用户管理</h1>
-          <p className="text-muted-foreground">
-            管理系统用户，包括添加、编辑、删除用户和设置角色权限
-          </p>
+          <h1 className="font-semibold">用户管理</h1>
+          <p className="text-muted-foreground">管理用户账号和权限</p>
         </div>
-        <Button onClick={() => openModal('addUser')}>
-          <Plus className="mr-2 h-4 w-4" />
-          添加用户
-        </Button>
       </div>
 
-      <div className="flex items-center space-x-2">
-        <Input
-          placeholder="搜索用户名..."
-          value={(table.getColumn('userAccount')?.getFilterValue() as string) ?? ''}
-          onChange={(event) => table.getColumn('userAccount')?.setFilterValue(event.target.value)}
-          className="max-w-sm"
-        />
-        <Select
-          value={(table.getColumn('userRole')?.getFilterValue() as string) ?? 'all'}
-          onValueChange={(value: string) => {
-            table.getColumn('userRole')?.setFilterValue(value === 'all' ? '' : value);
-          }}
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue placeholder="角色筛选" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">全部角色</SelectItem>
-            <SelectItem value="admin">管理员</SelectItem>
-            <SelectItem value="user">用户</SelectItem>
-            <SelectItem value="ban">禁用</SelectItem>
-          </SelectContent>
-        </Select>
-        {selectedRows.length > 0 && (
-          <Button variant="destructive" size="sm" onClick={() => openModal('deleteUsers')}>
-            <Trash2 className="mr-2 h-4 w-4" />
-            删除选中 ({selectedRows.length})
-          </Button>
-        )}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              列显示 <ChevronDown className="ml-2 h-4 w-4" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <Input
+            placeholder="搜索用户名..."
+            value={(table.getColumn('userAccount')?.getFilterValue() as string) ?? ''}
+            onChange={(event) => table.getColumn('userAccount')?.setFilterValue(event.target.value)}
+            className="max-w-sm"
+          />
+          <Select
+            value={(table.getColumn('userRole')?.getFilterValue() as string) ?? 'all'}
+            onValueChange={(value: string) => {
+              table.getColumn('userRole')?.setFilterValue(value === 'all' ? '' : value);
+            }}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="角色筛选" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">全部角色</SelectItem>
+              <SelectItem value="admin">管理员</SelectItem>
+              <SelectItem value="user">用户</SelectItem>
+              <SelectItem value="ban">禁用</SelectItem>
+            </SelectContent>
+          </Select>
+          {selectedRows.length > 0 && (
+            <Button variant="secondary" size="sm" onClick={() => openModal('deleteUsers')}>
+              <Trash2 className="mr-2 h-4 w-4" />
+              删除选中 ({selectedRows.length})
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                  >
-                    {column.id === 'id' && 'ID'}
-                    {column.id === 'userAccount' && '用户名'}
-                    {column.id === 'userName' && '昵称'}
-                    {column.id === 'userRole' && '角色'}
-                    {column.id === 'actions' && '操作'}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          )}
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button onClick={() => openModal('addUser')}>添加用户</Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                列显示 <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    >
+                      {column.id === 'id' && 'ID'}
+                      {column.id === 'userAccount' && '用户名'}
+                      {column.id === 'userName' && '姓名'}
+                      {column.id === 'userRole' && '角色'}
+                      {column.id === 'actions' && '操作'}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       <div className="rounded-md border">
-        <Table>
+        <Table className="table-fixed w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} style={{ width: header.column.getSize() }}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
@@ -220,7 +219,7 @@ export default function UserManagement() {
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

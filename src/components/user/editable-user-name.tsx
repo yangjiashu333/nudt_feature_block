@@ -6,18 +6,18 @@ import { Input } from '../ui/input';
 // 内联编辑昵称组件
 export default function EditableUserName({ user }: { user: User }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(user.userName);
+  const [editValue, setEditValue] = useState(user.userName || '');
   const { updateUser } = useUserStore();
 
   const handleSave = () => {
-    if (editValue.trim() && editValue !== user.userName) {
+    if (editValue.trim() !== user.userName) {
       updateUser(user.id, { userName: editValue.trim() });
     }
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    setEditValue(user.userName);
+    setEditValue(user.userName || '');
     setIsEditing(false);
   };
 
@@ -31,24 +31,26 @@ export default function EditableUserName({ user }: { user: User }) {
 
   if (isEditing) {
     return (
-      <Input
-        value={editValue}
-        onChange={(e) => setEditValue(e.target.value)}
-        onBlur={handleSave}
-        onKeyDown={handleKeyDown}
-        className="h-8 text-sm"
-        autoFocus
-      />
+      <div className="w-full">
+        <Input
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onBlur={handleSave}
+          onKeyDown={handleKeyDown}
+          className="h-8 text-sm w-full"
+          autoFocus
+        />
+      </div>
     );
   }
 
   return (
     <div
-      className="cursor-pointer hover:bg-muted/50 px-2 py-1 rounded min-h-[24px] flex items-center"
+      className="cursor-pointer hover:bg-muted/50 px-2 py-1 rounded min-h-[24px] flex items-center w-full"
       onClick={() => setIsEditing(true)}
-      title="点击编辑昵称"
+      title="点击编辑姓名"
     >
-      {user.userName}
+      {user.userName || '-'}
     </div>
   );
 }
