@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
 import {
   flexRender,
   getCoreRowModel,
@@ -44,8 +43,8 @@ import { PasswordModal } from '@/components/user/password-modal';
 import { DeleteUserDialog, DeleteUsersDialog } from '@/components/user/delete-user-dialog';
 
 export default function UserManagement() {
-  const navigate = useNavigate();
   const { user: currentUser, isAuthenticated } = useAuthStore();
+  const isAdmin = currentUser?.userRole === 'admin';
   const {
     users,
     getUserList,
@@ -78,13 +77,6 @@ export default function UserManagement() {
     }
   }, [isAuthenticated, currentUser, getUserList]);
 
-  // 权限验证：认证用户可以访问
-  useEffect(() => {
-    if (!isAuthenticated || !currentUser) {
-      navigate('/');
-    }
-  }, [isAuthenticated, currentUser, navigate]);
-
   const table = useReactTable({
     data: users,
     columns,
@@ -111,13 +103,6 @@ export default function UserManagement() {
 
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const selectedUsers = selectedRows.map((row) => row.original);
-
-  // 认证检查
-  if (!isAuthenticated || !currentUser) {
-    return null; // 被上面的useEffect重定向，这里不应该执行
-  }
-
-  const isAdmin = currentUser.userRole === 'admin';
 
   return (
     <div className="p-6 space-y-6">
@@ -160,9 +145,7 @@ export default function UserManagement() {
           )}
         </div>
         <div className="flex items-center space-x-2">
-          {isAdmin && (
-            <Button onClick={() => openModal('addUser')}>添加用户</Button>
-          )}
+          {isAdmin && <Button onClick={() => openModal('addUser')}>添加用户</Button>}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">

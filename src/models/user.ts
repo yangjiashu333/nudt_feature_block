@@ -46,7 +46,10 @@ export const useUserStore = create<UserState>((set) => ({
       const response = await userApi.getUserList();
       // 如果是普通用户，只显示自己的信息
       const currentUser = useAuthStore.getState().user;
-      const users = currentUser?.userRole === 'admin' ? response : response.filter(user => user.id === currentUser?.id);
+      const users =
+        currentUser?.userRole === 'admin'
+          ? response
+          : response.filter((user) => user.id === currentUser?.id);
       set({ users });
     } finally {
       set({ isLoading: false });
@@ -89,7 +92,7 @@ export const useUserStore = create<UserState>((set) => ({
   deleteUsers: async (ids) => {
     set({ isLoading: true });
     try {
-      await Promise.all(ids.map(id => userApi.deleteUser(id)));
+      await Promise.all(ids.map((id) => userApi.deleteUser(id)));
       const users = await userApi.getUserList();
       set({ users });
     } finally {

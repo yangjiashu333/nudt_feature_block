@@ -50,9 +50,7 @@ export default function EditableUserName({ user }: { user: User }) {
 
   if (!canEdit) {
     return (
-      <div className="px-2 py-1 min-h-[24px] flex items-center w-full">
-        {user.userName || '-'}
-      </div>
+      <div className="px-2 py-1 min-h-[24px] flex items-center w-full">{user.userName || '-'}</div>
     );
   }
 

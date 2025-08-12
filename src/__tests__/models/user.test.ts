@@ -55,7 +55,7 @@ describe('UserStore', () => {
     it('should fetch and set user list successfully for admin', async () => {
       // Ensure admin user is set
       useAuthStore.setState({ user: mockUsers[0], isAuthenticated: true });
-      
+
       await getStore().getUserList();
 
       const state = getStore();
@@ -66,7 +66,7 @@ describe('UserStore', () => {
     it('should fetch only own user data for regular user', async () => {
       // Set regular user
       useAuthStore.setState({ user: mockUsers[1], isAuthenticated: true });
-      
+
       await getStore().getUserList();
 
       const state = getStore();
@@ -77,7 +77,7 @@ describe('UserStore', () => {
     it('should set loading state during getUserList', async () => {
       // Ensure admin user is set
       useAuthStore.setState({ user: mockUsers[0], isAuthenticated: true });
-      
+
       const promise = getStore().getUserList();
 
       expect(getStore().isLoading).toBe(true);
@@ -90,7 +90,7 @@ describe('UserStore', () => {
     it('should add user successfully and refresh user list', async () => {
       // Ensure admin user is set
       useAuthStore.setState({ user: mockUsers[0], isAuthenticated: true });
-      
+
       const newUserData = {
         userAccount: 'testuser',
         userName: 'Test User',
@@ -110,7 +110,7 @@ describe('UserStore', () => {
     it('should handle addUser failure when user already exists', async () => {
       // Ensure admin user is set
       useAuthStore.setState({ user: mockUsers[0], isAuthenticated: true });
-      
+
       const existingUserData = {
         userAccount: 'admin',
         userName: 'Admin User',
@@ -126,7 +126,7 @@ describe('UserStore', () => {
     it('should update user successfully and refresh user list', async () => {
       // Ensure admin user is set
       useAuthStore.setState({ user: mockUsers[0], isAuthenticated: true });
-      
+
       const users = await setupUserList();
       const userToUpdate = users[1];
 
@@ -146,7 +146,7 @@ describe('UserStore', () => {
     it('should delete user successfully and refresh user list', async () => {
       // Ensure admin user is set
       useAuthStore.setState({ user: mockUsers[0], isAuthenticated: true });
-      
+
       const users = await setupUserList();
       const userToDelete = users[1];
       const initialCount = users.length;
@@ -164,7 +164,7 @@ describe('UserStore', () => {
     it('should delete multiple users successfully and refresh user list', async () => {
       // Ensure admin user is set
       useAuthStore.setState({ user: mockUsers[0], isAuthenticated: true });
-      
+
       const users = await setupUserList();
       const idsToDelete = [3, 4];
       const initialCount = users.length;

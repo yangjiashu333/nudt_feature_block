@@ -20,13 +20,14 @@ export const columns: ColumnDef<User>[] = [
     header: ({ table }) => {
       const currentUser = useAuthStore.getState().user;
       const isAdmin = currentUser?.userRole === 'admin';
-      
+
       if (!isAdmin) return null;
-      
+
       return (
         <Checkbox
           checked={
-            table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
@@ -36,9 +37,9 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const currentUser = useAuthStore.getState().user;
       const isAdmin = currentUser?.userRole === 'admin';
-      
+
       if (!isAdmin) return null;
-      
+
       return (
         <Checkbox
           checked={row.getIsSelected()}
@@ -78,7 +79,17 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const currentUser = useAuthStore.getState().user;
       const isAdmin = currentUser?.userRole === 'admin';
-      return isAdmin ? <RoleSelect user={row.original} /> : <span className="text-sm text-muted-foreground">{row.original.userRole === 'admin' ? '管理员' : row.original.userRole === 'user' ? '用户' : '禁用'}</span>;
+      return isAdmin ? (
+        <RoleSelect user={row.original} />
+      ) : (
+        <span className="text-sm text-muted-foreground">
+          {row.original.userRole === 'admin'
+            ? '管理员'
+            : row.original.userRole === 'user'
+              ? '用户'
+              : '禁用'}
+        </span>
+      );
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
