@@ -1,12 +1,11 @@
-import type { CommonReply } from './common';
+import type { CommonReply, Modality } from './common';
 
 // DTO
 export type FeatureListReply = Feature[];
 
 export interface FeatureCreateRequest {
   name: string;
-  modality: string;
-  params_schema: string;
+  modality: Modality;
   description?: string;
 }
 
@@ -16,8 +15,7 @@ export type FeatureCreateReply = CommonReply & {
 
 export interface FeatureUpdateRequest {
   name?: string;
-  modality?: string;
-  params_schema?: string;
+  modality?: Modality;
   description?: string;
 }
 
@@ -26,7 +24,6 @@ export interface FeatureUpdateRequest {
 export type Feature = {
   id: number;
   name: string;
-  description: string;
-  modality: string;
-  params_schema: Record<string, unknown>;
+  description?: string;
+  modality: Modality;
 };

@@ -6,23 +6,11 @@ import type {
   UserRegisterReply,
 } from '@/types/auth';
 import { httpService } from '@/services/http';
+import type { CommonReply } from '@/types/common';
 
 export const userApi = {
-  async getUserList(params?: {
-    page?: number;
-    pageSize?: number;
-    search?: string;
-    role?: string;
-  }): Promise<UserListReply> {
-    const queryParams = new URLSearchParams();
-
-    if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.pageSize) queryParams.append('pageSize', params.pageSize.toString());
-    if (params?.search) queryParams.append('search', params.search);
-    if (params?.role && params.role !== 'all') queryParams.append('role', params.role);
-
-    const url = queryParams.toString() ? `/api/user?${queryParams}` : '/api/user';
-    return await httpService.get<UserListReply>(url);
+  async getUserList(): Promise<UserListReply> {
+    return await httpService.get<UserListReply>('/api/user');
   },
 
   async getUserById(id: number): Promise<User> {
@@ -33,11 +21,11 @@ export const userApi = {
     return await httpService.post<UserRegisterReply>('/api/user/register', data);
   },
 
-  async updateUser(id: number, data: UserUpdateRequest): Promise<User> {
-    return await httpService.put<User>(`/api/user/${id}`, data);
+  async updateUser(id: number, data: UserUpdateRequest): Promise<CommonReply> {
+    return await httpService.put<CommonReply>(`/api/user/${id}`, data);
   },
 
-  async deleteUser(id: number): Promise<void> {
-    await httpService.delete(`/api/users/${id}`);
+  async deleteUser(id: number): Promise<CommonReply> {
+    return await httpService.delete<CommonReply>(`/api/users/${id}`);
   },
 };
