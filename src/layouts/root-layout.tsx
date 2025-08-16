@@ -21,12 +21,14 @@ export default function Layout() {
       <SidebarProvider>
         <AppSidebar />
         <main className="flex flex-col flex-1">
-          <header className="flex items-center h-15 p-2 border-b">
+          <header className="sticky top-0 z-50 flex items-center h-15 p-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <SidebarTrigger />
           </header>
-          <Suspense fallback={<LoadingFallback />}>
-            <Outlet />
-          </Suspense>
+          <div className="flex-1">
+            <Suspense fallback={<LoadingFallback />}>
+              <Outlet />
+            </Suspense>
+          </div>
         </main>
       </SidebarProvider>
     </ErrorBoundary>

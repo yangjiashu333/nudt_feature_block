@@ -13,25 +13,25 @@ const resetMockFeatures = () => {
     {
       id: 1,
       name: 'Age Feature',
-      modality: 'demographic',
+      modality: 'SAR',
       description: 'User age from profile data',
     },
     {
       id: 2,
       name: 'Click Rate',
-      modality: 'behavioral',
+      modality: 'RD',
       description: 'User click through rate on ads',
     },
     {
       id: 3,
       name: 'Purchase History',
-      modality: 'transactional',
+      modality: '1D',
       description: 'Historical purchase patterns',
     },
     {
       id: 4,
       name: 'Location Data',
-      modality: 'geographic',
+      modality: 'SAR',
       description: 'Geographic location preferences',
     }
   );
@@ -92,7 +92,7 @@ describe('FeatureStore', () => {
     it('should add feature successfully and refresh feature list', async () => {
       const newFeatureData = {
         name: 'Test Feature',
-        modality: 'test',
+        modality: 'SAR' as const,
         description: 'Test feature description',
       };
 
@@ -103,14 +103,14 @@ describe('FeatureStore', () => {
 
       const newFeature = state.features.find((f) => f.name === 'Test Feature');
       expect(newFeature).toBeDefined();
-      expect(newFeature?.modality).toBe('test');
+      expect(newFeature?.modality).toBe('SAR');
       expect(newFeature?.description).toBe('Test feature description');
     });
 
     it('should handle addFeature failure when feature name already exists', async () => {
       const existingFeatureData = {
         name: 'Age Feature',
-        modality: 'test',
+        modality: 'RD' as const,
         description: 'Test description',
       };
 
