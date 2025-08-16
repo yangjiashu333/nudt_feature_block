@@ -1,10 +1,10 @@
 // DTO
 
-export type BackboneListReply = Backbone[];
+export type ClassifierListReply = Classifier[];
 
 // Model
 
-export type Backbone = {
+export type Classifier = {
   id: number;
   name: string;
   description?: string;
