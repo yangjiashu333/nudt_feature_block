@@ -50,12 +50,7 @@ const modalityOptions: { value: Modality; label: string }[] = [
 
 export function EditFeatureModal() {
   const [isLoading, setIsLoading] = useState(false);
-  const { 
-    updateFeature, 
-    editFeatureModalOpen, 
-    selectedFeature, 
-    closeModal 
-  } = useFeatureStore();
+  const { updateFeature, editFeatureModalOpen, selectedFeature, closeModal } = useFeatureStore();
 
   const form = useForm<EditFeatureFormData>({
     resolver: zodResolver(editFeatureSchema),
@@ -79,7 +74,7 @@ export function EditFeatureModal() {
 
   const onSubmit = async (values: EditFeatureFormData) => {
     if (!selectedFeature) return;
-    
+
     setIsLoading(true);
 
     try {

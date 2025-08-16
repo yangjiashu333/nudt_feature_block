@@ -35,7 +35,7 @@ const resetMockFeatures = () => {
       name: 'Click Rate',
       modality: 'RD',
       description: 'User click through rate on ads',
-    },
+    }
   );
 };
 
@@ -67,7 +67,7 @@ describe('AddFeatureModal Integration', () => {
   describe('Component Integration with Store', () => {
     it('should integrate with useFeatureStore correctly', () => {
       const store = getStore();
-      
+
       expect(typeof store.addFeature).toBe('function');
       expect(store.addFeatureModalOpen).toBe(false);
       expect(store.isLoading).toBe(false);
@@ -75,11 +75,11 @@ describe('AddFeatureModal Integration', () => {
 
     it('should handle modal open state management', () => {
       const { openModal, closeModal } = getStore();
-      
+
       // Test opening modal
       openModal('addFeature');
       expect(getStore().addFeatureModalOpen).toBe(true);
-      
+
       // Test closing modal
       closeModal('addFeature');
       expect(getStore().addFeatureModalOpen).toBe(false);
@@ -100,7 +100,7 @@ describe('AddFeatureModal Integration', () => {
 
       const updatedStore = getStore();
       expect(updatedStore.isLoading).toBe(false);
-      
+
       const addedFeature = updatedStore.features.find((f) => f.name === 'Test Feature');
       expect(addedFeature).toBeDefined();
       expect(addedFeature?.modality).toBe('SAR');
@@ -135,7 +135,7 @@ describe('AddFeatureModal Integration', () => {
         };
 
         await store.addFeature(featureData);
-        
+
         const addedFeature = getStore().features.find((f) => f.name === `${modality} Feature`);
         expect(addedFeature).toBeDefined();
         expect(addedFeature?.modality).toBe(modality);
@@ -146,7 +146,7 @@ describe('AddFeatureModal Integration', () => {
   describe('Error Handling', () => {
     it('should handle duplicate feature name error', async () => {
       const store = getStore();
-      
+
       // First add a feature
       await store.addFeature({
         name: 'Duplicate Feature',
@@ -167,7 +167,7 @@ describe('AddFeatureModal Integration', () => {
 
     it('should handle network or server errors gracefully', async () => {
       const store = getStore();
-      
+
       // Mock a scenario that would cause server error by adding duplicate
       await store.addFeature({
         name: 'Test Feature',
@@ -219,8 +219,8 @@ describe('AddFeatureModal Integration', () => {
 
     it('should accept valid modality values', () => {
       const validModalities = ['SAR', 'RD', '1D'];
-      
-      validModalities.forEach(modality => {
+
+      validModalities.forEach((modality) => {
         expect(() => {
           if (!validModalities.includes(modality)) {
             throw new Error('请选择数据模态');
@@ -231,7 +231,7 @@ describe('AddFeatureModal Integration', () => {
 
     it('should reject invalid modality values', () => {
       const invalidModality = 'INVALID';
-      
+
       expect(() => {
         const validModalities = ['SAR', 'RD', '1D'];
         if (!validModalities.includes(invalidModality)) {
@@ -268,17 +268,17 @@ describe('AddFeatureModal Integration', () => {
   describe('Loading State Management', () => {
     it('should manage loading state during feature addition', async () => {
       const store = getStore();
-      
+
       // Initially not loading
       expect(store.isLoading).toBe(false);
-      
+
       // Start adding feature
       const addPromise = store.addFeature({
         name: 'Loading Test Feature',
         modality: 'SAR' as const,
         description: 'Testing loading state',
       });
-      
+
       // Should complete and reset loading state
       await addPromise;
       expect(getStore().isLoading).toBe(false);
@@ -286,7 +286,7 @@ describe('AddFeatureModal Integration', () => {
 
     it('should reset loading state on error', async () => {
       const store = getStore();
-      
+
       try {
         await store.addFeature({
           name: 'Age Feature', // Duplicate name
@@ -302,18 +302,18 @@ describe('AddFeatureModal Integration', () => {
   describe('Modal State Integration', () => {
     it('should close modal after successful feature addition', async () => {
       const { openModal, addFeature } = getStore();
-      
+
       // Open modal
       openModal('addFeature');
       expect(getStore().addFeatureModalOpen).toBe(true);
-      
+
       // Add feature successfully
       await addFeature({
         name: 'Success Test Feature',
         modality: 'SAR' as const,
         description: 'Test successful addition',
       });
-      
+
       // Modal should remain open until explicitly closed
       // This simulates the component logic where modal is closed after success
       const store = getStore();
@@ -323,11 +323,11 @@ describe('AddFeatureModal Integration', () => {
 
     it('should handle modal cancellation', () => {
       const { openModal, closeModal } = getStore();
-      
+
       // Open modal
       openModal('addFeature');
       expect(getStore().addFeatureModalOpen).toBe(true);
-      
+
       // Cancel/close modal
       closeModal('addFeature');
       expect(getStore().addFeatureModalOpen).toBe(false);
@@ -338,22 +338,22 @@ describe('AddFeatureModal Integration', () => {
   describe('Feature List Refresh', () => {
     it('should refresh feature list after adding new feature', async () => {
       const store = getStore();
-      
+
       // Get initial feature list
       await store.getFeatureList();
       const initialCount = getStore().features.length;
-      
+
       // Add new feature
       await store.addFeature({
         name: 'Refresh Test Feature',
         modality: '1D' as const,
         description: 'Testing list refresh',
       });
-      
+
       // Feature list should be updated
       const updatedStore = getStore();
       expect(updatedStore.features.length).toBe(initialCount + 1);
-      expect(updatedStore.features.find(f => f.name === 'Refresh Test Feature')).toBeDefined();
+      expect(updatedStore.features.find((f) => f.name === 'Refresh Test Feature')).toBeDefined();
     });
   });
 
@@ -362,7 +362,7 @@ describe('AddFeatureModal Integration', () => {
       const authStore = useAuthStore.getState();
       expect(authStore.isAuthenticated).toBe(true);
       expect(authStore.user).toBeDefined();
-      
+
       // Should be able to add feature when authenticated
       const featureStore = getStore();
       await featureStore.addFeature({
@@ -370,8 +370,8 @@ describe('AddFeatureModal Integration', () => {
         modality: 'SAR' as const,
         description: 'Testing with authentication',
       });
-      
-      const addedFeature = getStore().features.find(f => f.name === 'Auth Test Feature');
+
+      const addedFeature = getStore().features.find((f) => f.name === 'Auth Test Feature');
       expect(addedFeature).toBeDefined();
     });
   });

@@ -1,132 +1,203 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { useDatasetStore } from '@/models/dataset';
-import { mockDatasets } from '@/mocks/data/datasets';
+import { mockDatasets, mockImages } from '@/mocks/data/datasets';
 
-// Helper function to get a fresh store instance
-const getStore = () => useDatasetStore.getState();
-
-describe('DatasetStore - Basic Functionality', () => {
+describe('DatasetStore', () => {
   beforeEach(() => {
-    // Reset store state before each test
     useDatasetStore.setState({
       datasets: [],
       images: [],
       isLoading: false,
       selectedDataset: null,
-      datasetImagesModalOpen: false,
+      selectedImageId: null,
+      isViewerOpen: false,
     });
   });
 
-  describe('Initial State', () => {
+  describe('initial state', () => {
     it('should have correct initial state', () => {
-      const store = getStore();
+      const state = useDatasetStore.getState();
 
-      expect(store.datasets).toEqual([]);
-      expect(store.images).toEqual([]);
-      expect(store.isLoading).toBe(false);
-      expect(store.selectedDataset).toBe(null);
-      expect(store.datasetImagesModalOpen).toBe(false);
+      expect(state.datasets).toEqual([]);
+      expect(state.images).toEqual([]);
+      expect(state.isLoading).toBe(false);
+      expect(state.selectedDataset).toBe(null);
+      expect(state.selectedImageId).toBe(null);
+      expect(state.isViewerOpen).toBe(false);
+      expect(typeof state.getDatasetList).toBe('function');
+      expect(typeof state.getImageList).toBe('function');
+      expect(typeof state.setSelectedDataset).toBe('function');
+      expect(typeof state.setSelectedImage).toBe('function');
+      expect(typeof state.toggleViewer).toBe('function');
     });
   });
 
-  describe('Modal Management', () => {
-    it('should open dataset images modal with selected dataset', () => {
-      const store = getStore();
-      const testDataset = mockDatasets[0];
+  describe('getDatasetList', () => {
+    it('should fetch datasets successfully', async () => {
+      const { getDatasetList } = useDatasetStore.getState();
+      await getDatasetList();
 
-      store.openModal('datasetImages', testDataset);
-
-      const state = getStore();
-      expect(state.datasetImagesModalOpen).toBe(true);
-      expect(state.selectedDataset).toEqual(testDataset);
+      const state = useDatasetStore.getState();
+      expect(state.datasets).toEqual(mockDatasets);
+      expect(state.isLoading).toBe(false);
     });
 
-    it('should close dataset images modal and clear state', () => {
-      const store = getStore();
-      const testDataset = mockDatasets[0];
+    it('should set loading state during fetch', async () => {
+      const { getDatasetList } = useDatasetStore.getState();
 
-      // First open the modal
-      store.openModal('datasetImages', testDataset);
-      expect(getStore().datasetImagesModalOpen).toBe(true);
+      const promise = getDatasetList();
 
-      // Then close it
-      store.closeModal('datasetImages');
+      expect(useDatasetStore.getState().isLoading).toBe(true);
 
-      const state = getStore();
-      expect(state.datasetImagesModalOpen).toBe(false);
+      await promise;
+
+      expect(useDatasetStore.getState().isLoading).toBe(false);
+    });
+  });
+
+  describe('getImageList', () => {
+    it('should fetch images successfully for a dataset', async () => {
+      const datasetId = 1;
+      const expectedImages = mockImages[datasetId];
+
+      const { getImageList } = useDatasetStore.getState();
+      await getImageList(datasetId);
+
+      const state = useDatasetStore.getState();
+      expect(state.images).toEqual(expectedImages);
+      expect(state.isLoading).toBe(false);
+    });
+
+    it('should handle empty image list for non-existent dataset', async () => {
+      const nonExistentDatasetId = 999;
+
+      const { getImageList } = useDatasetStore.getState();
+      await getImageList(nonExistentDatasetId);
+
+      const state = useDatasetStore.getState();
+      expect(state.images).toEqual([]);
+      expect(state.isLoading).toBe(false);
+    });
+  });
+
+  describe('setSelectedDataset', () => {
+    it('should set selected dataset and load its images', async () => {
+      const dataset = mockDatasets[0];
+      const expectedImages = mockImages[dataset.id];
+
+      const { setSelectedDataset } = useDatasetStore.getState();
+      await setSelectedDataset(dataset);
+
+      const state = useDatasetStore.getState();
+      expect(state.selectedDataset).toEqual(dataset);
+      expect(state.images).toEqual(expectedImages);
+      expect(state.isLoading).toBe(false);
+    });
+
+    it('should auto-select first image when images are loaded', async () => {
+      const dataset = mockDatasets[0];
+      const expectedImages = mockImages[dataset.id];
+      const firstImageId = expectedImages[0].id;
+
+      const { setSelectedDataset } = useDatasetStore.getState();
+      await setSelectedDataset(dataset);
+
+      const state = useDatasetStore.getState();
+      expect(state.selectedImageId).toBe(firstImageId);
+    });
+
+    it('should handle dataset with no images', async () => {
+      const dataset = { id: 999, name: 'Empty Dataset', modality: 'SAR' as const, path: '/empty' };
+
+      const { setSelectedDataset } = useDatasetStore.getState();
+      await setSelectedDataset(dataset);
+
+      const state = useDatasetStore.getState();
+      expect(state.selectedDataset).toEqual(dataset);
+      expect(state.images).toEqual([]);
+      expect(state.selectedImageId).toBe(null);
+    });
+  });
+
+  describe('setSelectedImage', () => {
+    it('should set selected image ID', () => {
+      const imageId = 101;
+
+      const { setSelectedImage } = useDatasetStore.getState();
+      setSelectedImage(imageId);
+
+      const state = useDatasetStore.getState();
+      expect(state.selectedImageId).toBe(imageId);
+    });
+
+    it('should allow setting image ID to null', () => {
+      useDatasetStore.setState({ selectedImageId: 101 });
+
+      const { setSelectedImage } = useDatasetStore.getState();
+      setSelectedImage(null);
+
+      const state = useDatasetStore.getState();
+      expect(state.selectedImageId).toBe(null);
+    });
+  });
+
+  describe('toggleViewer', () => {
+    it('should toggle viewer state', () => {
+      const { toggleViewer } = useDatasetStore.getState();
+
+      expect(useDatasetStore.getState().isViewerOpen).toBe(false);
+
+      toggleViewer();
+      expect(useDatasetStore.getState().isViewerOpen).toBe(true);
+
+      toggleViewer();
+      expect(useDatasetStore.getState().isViewerOpen).toBe(false);
+    });
+
+    it('should allow explicit open/close', () => {
+      const { toggleViewer } = useDatasetStore.getState();
+
+      toggleViewer(true);
+      expect(useDatasetStore.getState().isViewerOpen).toBe(true);
+
+      toggleViewer(false);
+      expect(useDatasetStore.getState().isViewerOpen).toBe(false);
+    });
+
+    it('should clear state when closing viewer', () => {
+      useDatasetStore.setState({
+        selectedDataset: mockDatasets[0],
+        selectedImageId: 101,
+        images: mockImages[1],
+        isViewerOpen: true,
+      });
+
+      const { toggleViewer } = useDatasetStore.getState();
+      toggleViewer(false);
+
+      const state = useDatasetStore.getState();
+      expect(state.isViewerOpen).toBe(false);
       expect(state.selectedDataset).toBe(null);
+      expect(state.selectedImageId).toBe(null);
       expect(state.images).toEqual([]);
     });
 
-    it('should handle opening modal without dataset', () => {
-      const store = getStore();
-
-      store.openModal('datasetImages', undefined);
-
-      const state = getStore();
-      expect(state.datasetImagesModalOpen).toBe(true);
-      expect(state.selectedDataset).toBe(null);
-    });
-  });
-
-  describe('Mock Data Validation', () => {
-    it('should have valid mock dataset structure', () => {
-      expect(mockDatasets).toBeDefined();
-      expect(Array.isArray(mockDatasets)).toBe(true);
-      expect(mockDatasets.length).toBeGreaterThan(0);
-
-      mockDatasets.forEach((dataset) => {
-        expect(dataset).toHaveProperty('id');
-        expect(dataset).toHaveProperty('name');
-        expect(dataset).toHaveProperty('modality');
-        expect(dataset).toHaveProperty('path');
-        expect(typeof dataset.id).toBe('number');
-        expect(typeof dataset.name).toBe('string');
-        expect(['SAR', 'RD', '1D']).toContain(dataset.modality);
-        expect(typeof dataset.path).toBe('string');
+    it('should not clear state when opening viewer', () => {
+      useDatasetStore.setState({
+        selectedDataset: mockDatasets[0],
+        selectedImageId: 101,
+        images: mockImages[1],
+        isViewerOpen: false,
       });
-    });
 
-    it('should group datasets by modality correctly', () => {
-      const sarDatasets = mockDatasets.filter((d) => d.modality === 'SAR');
-      const rdDatasets = mockDatasets.filter((d) => d.modality === 'RD');
-      const oneDDatasets = mockDatasets.filter((d) => d.modality === '1D');
+      const { toggleViewer } = useDatasetStore.getState();
+      toggleViewer(true);
 
-      expect(sarDatasets.length).toBeGreaterThan(0);
-      expect(rdDatasets.length).toBeGreaterThan(0);
-      expect(oneDDatasets.length).toBeGreaterThan(0);
-
-      sarDatasets.forEach((dataset) => expect(dataset.modality).toBe('SAR'));
-      rdDatasets.forEach((dataset) => expect(dataset.modality).toBe('RD'));
-      oneDDatasets.forEach((dataset) => expect(dataset.modality).toBe('1D'));
-    });
-  });
-
-  describe('Store Methods Exist', () => {
-    it('should have all required methods', () => {
-      const store = getStore();
-
-      expect(typeof store.getDatasetList).toBe('function');
-      expect(typeof store.getImageList).toBe('function');
-      expect(typeof store.openModal).toBe('function');
-      expect(typeof store.closeModal).toBe('function');
-    });
-  });
-
-  describe('State Updates', () => {
-    it('should update loading state correctly', () => {
-      // Test that we can set loading state
-      useDatasetStore.setState({ isLoading: true });
-      expect(getStore().isLoading).toBe(true);
-
-      useDatasetStore.setState({ isLoading: false });
-      expect(getStore().isLoading).toBe(false);
-    });
-
-    it('should update datasets state correctly', () => {
-      // Test that we can set datasets
-      useDatasetStore.setState({ datasets: mockDatasets });
-      expect(getStore().datasets).toEqual(mockDatasets);
+      const state = useDatasetStore.getState();
+      expect(state.isViewerOpen).toBe(true);
+      expect(state.selectedDataset).toEqual(mockDatasets[0]);
+      expect(state.selectedImageId).toBe(101);
+      expect(state.images).toEqual(mockImages[1]);
     });
   });
 });

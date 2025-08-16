@@ -2,12 +2,10 @@ import { useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useDatasetStore } from '@/models/dataset';
 import { DatasetCard } from '@/components/dataset/dataset-card';
-import { DatasetImagesModal } from '@/components/dataset/dataset-images-modal';
+import { DatasetViewerDialog } from '@/components/dataset/dataset-viewer-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Database } from 'lucide-react';
-import { mockImages } from '@/mocks/data/datasets';
 import type { Dataset } from '@/types/dataset';
 import type { Modality } from '@/types/common';
 
@@ -24,15 +22,8 @@ const modalityDescriptions: Record<Modality, string> = {
 };
 
 export default function DatasetPage() {
-  const {
-    datasets,
-    isLoading,
-    selectedDataset,
-    datasetImagesModalOpen,
-    getDatasetList,
-    openModal,
-    closeModal,
-  } = useDatasetStore();
+  const { datasets, isLoading, getDatasetList, setSelectedDataset, toggleViewer } =
+    useDatasetStore();
 
   useEffect(() => {
     const loadDatasets = async () => {
@@ -58,12 +49,13 @@ export default function DatasetPage() {
     );
   }, [datasets]);
 
-  const handleViewImages = (dataset: Dataset) => {
-    openModal('datasetImages', dataset);
-  };
-
-  const getImageCount = (datasetId: number): number => {
-    return mockImages[datasetId]?.length || 0;
+  const handleViewImages = async (dataset: Dataset) => {
+    try {
+      await setSelectedDataset(dataset);
+      toggleViewer(true);
+    } catch {
+      toast.error('加载数据集图片失败');
+    }
   };
 
   if (isLoading) {
@@ -77,16 +69,14 @@ export default function DatasetPage() {
   const isEmpty = Object.keys(groupedDatasets).length === 0;
 
   return (
-    <div className="container mx-auto max-w-7xl p-6 space-y-8">
+    <div className="container mx-auto max-w-7xl p-6 space-y-6">
       {/* Header Section */}
       <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">数据集</h1>
+        <div>
+          <h1 className="font-semibold tracking-tight">数据集</h1>
           <p className="text-muted-foreground">管理和浏览机器学习训练数据集</p>
         </div>
       </div>
-
-      <Separator />
 
       {/* Content Section */}
       {isEmpty ? (
@@ -129,7 +119,6 @@ export default function DatasetPage() {
                       key={dataset.id}
                       dataset={dataset}
                       onViewImages={handleViewImages}
-                      imageCount={getImageCount(dataset.id)}
                     />
                   ))}
                 </div>
@@ -139,12 +128,7 @@ export default function DatasetPage() {
         </div>
       )}
 
-      {/* Dataset Images Modal */}
-      <DatasetImagesModal
-        open={datasetImagesModalOpen}
-        onOpenChange={() => closeModal('datasetImages')}
-        dataset={selectedDataset}
-      />
+      <DatasetViewerDialog />
     </div>
   );
 }

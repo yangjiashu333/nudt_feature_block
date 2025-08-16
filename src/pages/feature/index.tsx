@@ -8,7 +8,6 @@ import { EditFeatureModal } from '@/components/feature/edit-feature-modal';
 import { DeleteFeatureDialog } from '@/components/feature/delete-feature-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import type { Feature } from '@/types/feature';
 import type { Modality } from '@/types/common';
@@ -84,11 +83,11 @@ export default function FeaturePage() {
   const isEmpty = Object.keys(groupedFeatures).length === 0;
 
   return (
-    <div className="container mx-auto max-w-7xl p-6 space-y-8">
+    <div className="container mx-auto max-w-7xl p-6 space-y-6">
       {/* Header Section */}
       <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">特征算子</h1>
+        <div>
+          <h1 className="font-semibold tracking-tight">特征算子</h1>
           <p className="text-muted-foreground">管理和组织数据管道中的特征处理算子</p>
         </div>
         <Button onClick={handleAddFeature} size="lg" className="gap-2">
@@ -96,8 +95,6 @@ export default function FeaturePage() {
           添加特征
         </Button>
       </div>
-
-      <Separator />
 
       {/* Content Section */}
       {isEmpty ? (

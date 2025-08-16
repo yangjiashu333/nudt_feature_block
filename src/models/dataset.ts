@@ -2,27 +2,28 @@ import { create } from 'zustand';
 import { datasetApi } from '@/services/api/dataset';
 import type { Dataset, Image } from '@/types/dataset';
 
-type ModalType = 'datasetImages';
-
 interface DatasetState {
   datasets: Dataset[];
   images: Image[];
   isLoading: boolean;
   selectedDataset: Dataset | null;
-  datasetImagesModalOpen: boolean;
+  selectedImageId: number | null;
+  isViewerOpen: boolean;
 
   getDatasetList: () => Promise<void>;
   getImageList: (datasetId: number) => Promise<void>;
-  openModal: (modal: ModalType, dataset?: Dataset | null) => void;
-  closeModal: (modal: ModalType) => void;
+  setSelectedDataset: (dataset: Dataset) => Promise<void>;
+  setSelectedImage: (imageId: number | null) => void;
+  toggleViewer: (open?: boolean) => void;
 }
 
-export const useDatasetStore = create<DatasetState>((set) => ({
+export const useDatasetStore = create<DatasetState>((set, get) => ({
   datasets: [],
   images: [],
   isLoading: false,
   selectedDataset: null,
-  datasetImagesModalOpen: false,
+  selectedImageId: null,
+  isViewerOpen: false,
 
   getDatasetList: async () => {
     set({ isLoading: true });
@@ -44,17 +45,26 @@ export const useDatasetStore = create<DatasetState>((set) => ({
     }
   },
 
-  openModal: (modal, dataset) => {
-    const modalState = {
-      datasetImages: { datasetImagesModalOpen: true, selectedDataset: dataset || null },
-    };
-    set(modalState[modal]);
+  setSelectedDataset: async (dataset: Dataset) => {
+    set({ selectedDataset: dataset, selectedImageId: null });
+    await get().getImageList(dataset.id);
+    const { images } = get();
+    if (images.length > 0) {
+      set({ selectedImageId: images[0].id });
+    }
   },
 
-  closeModal: (modal) => {
-    const modalState = {
-      datasetImages: { datasetImagesModalOpen: false, selectedDataset: null, images: [] },
-    };
-    set(modalState[modal]);
+  setSelectedImage: (imageId: number | null) => {
+    set({ selectedImageId: imageId });
+  },
+
+  toggleViewer: (open?: boolean) => {
+    const currentState = get().isViewerOpen;
+    const newState = open !== undefined ? open : !currentState;
+    set({ isViewerOpen: newState });
+
+    if (!newState) {
+      set({ selectedDataset: null, selectedImageId: null, images: [] });
+    }
   },
 }));

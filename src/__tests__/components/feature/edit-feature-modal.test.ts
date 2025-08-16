@@ -42,7 +42,7 @@ const resetMockFeatures = () => {
       name: 'Purchase History',
       modality: '1D',
       description: 'Historical purchase patterns',
-    },
+    }
   );
 };
 
@@ -74,7 +74,7 @@ describe('EditFeatureModal Integration', () => {
   describe('Component Integration with Store', () => {
     it('should integrate with useFeatureStore correctly', () => {
       const store = getStore();
-      
+
       expect(typeof store.updateFeature).toBe('function');
       expect(typeof store.openModal).toBe('function');
       expect(typeof store.closeModal).toBe('function');
@@ -86,13 +86,13 @@ describe('EditFeatureModal Integration', () => {
     it('should handle edit modal open state management', () => {
       const { openModal, closeModal } = getStore();
       const testFeature = mockFeatures[0];
-      
+
       // Test opening modal with selected feature
       openModal('editFeature', testFeature);
       const openState = getStore();
       expect(openState.editFeatureModalOpen).toBe(true);
       expect(openState.selectedFeature).toBe(testFeature);
-      
+
       // Test closing modal
       closeModal('editFeature');
       const closedState = getStore();
@@ -105,14 +105,14 @@ describe('EditFeatureModal Integration', () => {
     it('should correctly handle selected feature for editing', () => {
       const store = getStore();
       const featureToEdit = mockFeatures[1];
-      
+
       // Simulate opening edit modal with specific feature
       store.openModal('editFeature', featureToEdit);
-      
+
       const state = getStore();
       expect(state.selectedFeature).toEqual(featureToEdit);
       expect(state.editFeatureModalOpen).toBe(true);
-      
+
       // Verify the selected feature data
       expect(state.selectedFeature?.name).toBe('Click Rate');
       expect(state.selectedFeature?.modality).toBe('RD');
@@ -125,10 +125,10 @@ describe('EditFeatureModal Integration', () => {
         name: 'Minimal Feature',
         modality: 'SAR',
       };
-      
+
       const store = getStore();
       store.openModal('editFeature', minimalFeature);
-      
+
       const state = getStore();
       expect(state.selectedFeature).toEqual(minimalFeature);
       expect(state.selectedFeature?.description).toBeUndefined();
@@ -136,7 +136,7 @@ describe('EditFeatureModal Integration', () => {
 
     it('should handle feature with all modality types', () => {
       const modalityTypes = ['SAR', 'RD', '1D'] as const;
-      
+
       modalityTypes.forEach((modality, index) => {
         const testFeature: Feature = {
           id: index + 100,
@@ -144,14 +144,14 @@ describe('EditFeatureModal Integration', () => {
           modality,
           description: `Feature with ${modality} modality`,
         };
-        
+
         const store = getStore();
         store.openModal('editFeature', testFeature);
-        
+
         const state = getStore();
         expect(state.selectedFeature?.modality).toBe(modality);
         expect(state.selectedFeature?.name).toBe(`${modality} Test Feature`);
-        
+
         store.closeModal('editFeature');
       });
     });
@@ -160,11 +160,11 @@ describe('EditFeatureModal Integration', () => {
   describe('Feature Update Logic', () => {
     it('should update feature with valid data successfully', async () => {
       const store = getStore();
-      
+
       // First setup feature list
       await store.getFeatureList();
       const featureToUpdate = getStore().features[0];
-      
+
       const updates = {
         name: 'Updated Feature Name',
         modality: 'RD' as const,
@@ -176,7 +176,7 @@ describe('EditFeatureModal Integration', () => {
 
       const updatedStore = getStore();
       expect(updatedStore.isLoading).toBe(false);
-      
+
       const updatedFeature = updatedStore.features.find((f) => f.id === featureToUpdate.id);
       expect(updatedFeature).toBeDefined();
       expect(updatedFeature?.name).toBe('Updated Feature Name');
@@ -186,12 +186,12 @@ describe('EditFeatureModal Integration', () => {
 
     it('should update feature with partial data', async () => {
       const store = getStore();
-      
+
       // Setup feature list
       await store.getFeatureList();
       const featureToUpdate = getStore().features[1];
       const originalModality = featureToUpdate.modality;
-      
+
       // Update only name
       const partialUpdates = {
         name: 'Partially Updated Feature',
@@ -207,11 +207,11 @@ describe('EditFeatureModal Integration', () => {
 
     it('should update feature modality correctly', async () => {
       const store = getStore();
-      
+
       // Setup feature list
       await store.getFeatureList();
       const featureToUpdate = getStore().features[0];
-      
+
       // Change modality
       const modalityUpdate = {
         modality: '1D' as const,
@@ -226,11 +226,11 @@ describe('EditFeatureModal Integration', () => {
 
     it('should clear description when updated to empty', async () => {
       const store = getStore();
-      
+
       // Setup feature list
       await store.getFeatureList();
       const featureToUpdate = getStore().features[2]; // Has description
-      
+
       // Clear description
       const clearDescriptionUpdate = {
         description: '',
@@ -248,7 +248,7 @@ describe('EditFeatureModal Integration', () => {
     it('should handle update of non-existent feature', async () => {
       const store = getStore();
       const nonExistentId = 999;
-      
+
       const updates = {
         name: 'Updated Name',
         description: 'Updated description',
@@ -260,13 +260,13 @@ describe('EditFeatureModal Integration', () => {
 
     it('should handle duplicate name error during update', async () => {
       const store = getStore();
-      
+
       // Setup feature list
       await store.getFeatureList();
       const features = getStore().features;
       const featureToUpdate = features[0];
       const existingFeatureName = features[1].name;
-      
+
       // Try to update to existing name
       const duplicateNameUpdate = {
         name: existingFeatureName,
@@ -278,13 +278,13 @@ describe('EditFeatureModal Integration', () => {
 
     it('should handle network or server errors gracefully', async () => {
       const store = getStore();
-      
+
       // Setup feature list first
       await store.getFeatureList();
       const features = getStore().features;
       const featureToUpdate = features[0];
       const existingFeatureName = features[1].name;
-      
+
       // Mock a scenario that would cause server error (duplicate name)
       const invalidUpdate = {
         name: existingFeatureName, // Duplicate name should cause validation error
@@ -315,7 +315,7 @@ describe('EditFeatureModal Integration', () => {
     it('should validate modality field when provided', () => {
       const validModalities = ['SAR', 'RD', '1D'];
       const invalidModality = 'INVALID';
-      
+
       expect(() => {
         if (!validModalities.includes(invalidModality)) {
           throw new Error('请选择数据模态');
@@ -325,8 +325,8 @@ describe('EditFeatureModal Integration', () => {
 
     it('should accept valid modality values for updates', () => {
       const validModalities = ['SAR', 'RD', '1D'];
-      
-      validModalities.forEach(modality => {
+
+      validModalities.forEach((modality) => {
         expect(() => {
           if (!validModalities.includes(modality)) {
             throw new Error('请选择数据模态');
@@ -365,20 +365,20 @@ describe('EditFeatureModal Integration', () => {
   describe('Loading State Management', () => {
     it('should manage loading state during feature update', async () => {
       const store = getStore();
-      
+
       // Setup feature list
       await store.getFeatureList();
       const featureToUpdate = getStore().features[0];
-      
+
       // Initially not loading
       expect(store.isLoading).toBe(false);
-      
+
       // Start updating feature
       const updatePromise = store.updateFeature(featureToUpdate.id, {
         name: 'Loading Test Update',
         description: 'Testing loading state during update',
       });
-      
+
       // Should complete and reset loading state
       await updatePromise;
       expect(getStore().isLoading).toBe(false);
@@ -386,9 +386,10 @@ describe('EditFeatureModal Integration', () => {
 
     it('should reset loading state on update error', async () => {
       const store = getStore();
-      
+
       try {
-        await store.updateFeature(999, { // Non-existent ID
+        await store.updateFeature(999, {
+          // Non-existent ID
           name: 'Error Test Update',
         });
       } catch {
@@ -401,21 +402,21 @@ describe('EditFeatureModal Integration', () => {
   describe('Modal State Integration', () => {
     it('should close modal after successful feature update', async () => {
       const store = getStore();
-      
+
       // Setup feature list
       await store.getFeatureList();
       const featureToUpdate = getStore().features[0];
-      
+
       // Open edit modal
       store.openModal('editFeature', featureToUpdate);
       expect(getStore().editFeatureModalOpen).toBe(true);
-      
+
       // Update feature successfully
       await store.updateFeature(featureToUpdate.id, {
         name: 'Success Update Test',
         description: 'Test successful update',
       });
-      
+
       // Modal should remain open until explicitly closed
       // This simulates the component logic where modal is closed after success
       store.closeModal('editFeature');
@@ -426,12 +427,12 @@ describe('EditFeatureModal Integration', () => {
     it('should handle modal cancellation without changes', () => {
       const store = getStore();
       const testFeature = mockFeatures[1];
-      
+
       // Open edit modal
       store.openModal('editFeature', testFeature);
       expect(getStore().editFeatureModalOpen).toBe(true);
       expect(getStore().selectedFeature).toBe(testFeature);
-      
+
       // Cancel/close modal without saving
       store.closeModal('editFeature');
       expect(getStore().editFeatureModalOpen).toBe(false);
@@ -442,11 +443,11 @@ describe('EditFeatureModal Integration', () => {
       const store = getStore();
       const firstFeature = mockFeatures[0];
       const secondFeature = mockFeatures[1];
-      
+
       // Open edit modal with first feature
       store.openModal('editFeature', firstFeature);
       expect(getStore().selectedFeature).toBe(firstFeature);
-      
+
       // Switch to second feature (close and open new)
       store.closeModal('editFeature');
       store.openModal('editFeature', secondFeature);
@@ -458,21 +459,21 @@ describe('EditFeatureModal Integration', () => {
   describe('Feature List Refresh', () => {
     it('should refresh feature list after updating feature', async () => {
       const store = getStore();
-      
+
       // Get initial feature list
       await store.getFeatureList();
       const featureToUpdate = getStore().features[0];
       const originalName = featureToUpdate.name;
-      
+
       // Update feature
       await store.updateFeature(featureToUpdate.id, {
         name: 'Refresh Test Update',
         description: 'Testing list refresh after update',
       });
-      
+
       // Feature list should be updated
       const updatedStore = getStore();
-      const updatedFeature = updatedStore.features.find(f => f.id === featureToUpdate.id);
+      const updatedFeature = updatedStore.features.find((f) => f.id === featureToUpdate.id);
       expect(updatedFeature?.name).toBe('Refresh Test Update');
       expect(updatedFeature?.name).not.toBe(originalName);
     });
@@ -483,19 +484,19 @@ describe('EditFeatureModal Integration', () => {
       const authStore = useAuthStore.getState();
       expect(authStore.isAuthenticated).toBe(true);
       expect(authStore.user).toBeDefined();
-      
+
       // Setup feature list
       const featureStore = getStore();
       await featureStore.getFeatureList();
       const featureToUpdate = getStore().features[0];
-      
+
       // Should be able to update feature when authenticated
       await featureStore.updateFeature(featureToUpdate.id, {
         name: 'Auth Test Update',
         description: 'Testing update with authentication',
       });
-      
-      const updatedFeature = getStore().features.find(f => f.id === featureToUpdate.id);
+
+      const updatedFeature = getStore().features.find((f) => f.id === featureToUpdate.id);
       expect(updatedFeature?.name).toBe('Auth Test Update');
     });
   });
@@ -507,36 +508,36 @@ describe('EditFeatureModal Integration', () => {
         name: 'No Description Feature',
         modality: 'SAR',
       };
-      
+
       const store = getStore();
-      
+
       // Add the feature to mock data
       mockFeatures.push(featureWithoutDescription);
       await store.getFeatureList();
-      
+
       // Update to add description
       await store.updateFeature(featureWithoutDescription.id, {
         description: 'Added description during edit',
       });
-      
-      const updatedFeature = getStore().features.find(f => f.id === featureWithoutDescription.id);
+
+      const updatedFeature = getStore().features.find((f) => f.id === featureWithoutDescription.id);
       expect(updatedFeature?.description).toBe('Added description during edit');
     });
 
     it('should handle updating feature name with special characters', async () => {
       const store = getStore();
-      
+
       // Setup feature list
       await store.getFeatureList();
       const featureToUpdate = getStore().features[0];
-      
+
       // Update with special characters
       await store.updateFeature(featureToUpdate.id, {
         name: 'Feature_With-Special.Characters',
         description: 'Testing special characters: !@#$%^&*()',
       });
-      
-      const updatedFeature = getStore().features.find(f => f.id === featureToUpdate.id);
+
+      const updatedFeature = getStore().features.find((f) => f.id === featureToUpdate.id);
       expect(updatedFeature?.name).toBe('Feature_With-Special.Characters');
       expect(updatedFeature?.description).toBe('Testing special characters: !@#$%^&*()');
     });

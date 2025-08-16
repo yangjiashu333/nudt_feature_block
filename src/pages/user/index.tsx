@@ -105,7 +105,7 @@ export default function UserManagement() {
   const selectedUsers = selectedRows.map((row) => row.original);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="container mx-auto max-w-7xl p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-semibold">用户管理</h1>
