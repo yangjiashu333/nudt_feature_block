@@ -97,7 +97,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-xl rounded-2xl overflow-hidden">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center tracking-tight">
-            {isRegisterMode ? '注册账号' : '登录到文档管理系统'}
+            {isRegisterMode ? '注册账号' : '登录到特征嵌入管理系统'}
           </CardTitle>
           <CardDescription className="text-center mt-1">
             {isRegisterMode ? '创建您的账号以开始使用' : '请输入您的账号信息以继续'}
