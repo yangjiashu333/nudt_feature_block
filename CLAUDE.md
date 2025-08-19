@@ -2,116 +2,83 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
-
-This is a **React 19 + TypeScript 5.8 + Vite** application for data pipeline/ML feature management, using **session-based authentication** with HTTP-only cookies and **Zustand** for state management.
-
 ## Development Commands
 
-```bash
-# Development
-npm run dev                 # Start development server
-npm run build              # Production build (TypeScript + Vite)
-npm run test               # Run all tests with Vitest
-npm run test:ui            # Interactive test UI
-npm run lint               # ESLint with TypeScript rules
-npm run format             # Prettier formatting
+### Core Development
+- `npm run dev` - Start Vite development server
+- `npm run build` - Build for production (runs TypeScript check first)
+- `npm run preview` - Preview production build locally
 
-# Testing specific files
-npx vitest tests/models/auth.test.ts        # Run specific test file
-npx vitest --watch tests/models/            # Watch mode for directory
-```
+### Code Quality
+- `npm run lint` - Run ESLint on codebase
+- `npm run format` - Format code with Prettier
+
+### Testing
+- `npm test` - Run tests in watch mode with Vitest
+- `npm run test:run` - Run tests once
+- `npm run test:ui` - Run tests with Vitest UI
 
 ## Architecture Overview
 
-### State Management Pattern
+This is a React + TypeScript + Vite application using modern tooling and patterns:
 
-- **Zustand stores** in `/src/models/` act as domain models (not Redux)
-- **Persistent auth store** manages session state with localStorage backup
-- **No React Query** - async data handled through Zustand actions + Axios
+### Tech Stack
+- **Frontend**: React 19 with TypeScript, React Router v7 for routing
+- **UI**: shadcn/ui components with Radix UI primitives and Tailwind CSS v4
+- **State Management**: Zustand with persistence middleware for auth state
+- **HTTP Client**: Axios with custom interceptors for error handling
+- **Testing**: Vitest with MSW (Mock Service Worker) for API mocking
+- **Build Tool**: Vite with path aliases (`@/` maps to `src/`)
 
-### Authentication System
+### Project Structure
+- `src/components/` - Reusable UI components organized by feature
+  - `ui/` - shadcn/ui components (don't modify these directly)
+  - `feature/` - Feature-specific components (features, datasets, etc.)
+  - `user/` - User management components
+  - `dashboard/` - Dashboard-specific components
+- `src/pages/` - Route components for different app sections
+- `src/models/` - Zustand stores for state management
+- `src/services/` - API layer and HTTP utilities
+- `src/types/` - TypeScript type definitions
+- `src/mocks/` - MSW handlers and mock data for development
+- `src/hooks/` - Custom React hooks
+- `src/lib/` - Utility functions
 
-- **Session-based with HTTP-only cookies** (not JWT tokens)
-- HTTP client configured with `withCredentials: true`
-- **Automatic 401 handling** in HTTP interceptor clears auth state and redirects
-- **Route protection** at layout level, not component level
+### Key Patterns
 
-### HTTP Layer Architecture
+#### State Management
+Uses Zustand with persistence for auth state. Example store structure in `src/models/auth.ts`.
 
-- **Centralized HTTP client** in `/src/services/http/index.ts`
-- **Automatic error handling** with toast notifications (uses Sonner)
-- **Request configuration options**:
-  - `skipAuth: true` for login/register endpoints
-  - `silentError: true` to suppress toast notifications
-  - `customErrorHandler` for specific error handling
+#### API Layer
+Centralized HTTP service in `src/services/http/index.ts` with:
+- Axios interceptors for error handling
+- Automatic auth token management
+- Toast notifications for errors
+- Custom error types
 
-### Component Structure
+#### Component Organization
+- Feature-based component organization
+- shadcn/ui for base components
+- Consistent use of React Hook Form + Zod for forms
+- Toast notifications via sonner
 
-- **shadcn/ui + Radix UI** component system in `/src/components/ui/`
-- **Feature-based organization** - components grouped by domain (dashboard, user)
-- **Form handling** with React Hook Form + Zod validation
+#### Mock Development
+MSW is configured for development with:
+- Handlers in `src/mocks/handlers/`
+- Mock data in `src/mocks/data/`
+- Automatic sync with auth state
 
-## Key Technical Decisions
+#### Testing Setup
+- Vitest configured with globals and Node environment
+- Test setup file at `src/__tests__/setup/vitest.setup.ts`
+- Component tests follow `.test.ts` naming convention
 
-1. **No token storage** - authentication relies entirely on server-managed sessions
-2. **Error handling centralized** in HTTP layer to reduce development overhead
-3. **TypeScript strict mode** with comprehensive type definitions in `/src/types/`
-4. **Path aliases** configured: `@/*` maps to `./src/*`
+### TypeScript Configuration
+- Uses project references with separate configs for app and Node
+- Path alias `@/*` maps to `src/*`
+- Strict TypeScript configuration
 
-## Testing Strategy
-
-- **Vitest** with Node.js environment and mocked browser APIs
-- **Service layer mocking** in `/tests/mocks/` with realistic data
-- **State management testing** focuses on async actions and error states
-- **Test structure mirrors source** - organize by domain, not technical layers
-
-## Common Patterns
-
-### Adding New Features
-
-1. Define types in `/src/types/[domain].ts`
-2. Create API endpoints in `/src/services/api/[domain].ts`
-3. Build Zustand store in `/src/models/[domain].ts`
-4. Create components in `/src/components/[domain]/`
-5. Add tests in `/tests/models/[domain].test.ts`
-
-### API Error Handling
-
-```typescript
-// Automatic error handling (default)
-await httpService.post('/api/data', payload);
-
-// Silent errors for optional operations
-await httpService.post('/api/data', payload, { silentError: true });
-
-// Custom error handling
-await httpService.post('/api/data', payload, {
-  customErrorHandler: (error) => {
-    /* custom logic */
-  },
-});
-```
-
-### Authentication Checks
-
-```typescript
-// In components - reactive to auth state changes
-const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-const user = useAuthStore((state) => state.user);
-```
-
-## Domain Context
-
-The application supports role-based access (user, admin, ban) for collaborative data science workflows.
-
-## Rules
-
-- 应用仅用于桌面端，不考虑移动端适配
-- 组件使用shadcn，图标使用lucide，样式使用shadcn定义的design token
-- 所有的标题和描述尽量简洁，使用字体粗细和颜色来区分功能，而不是使用字体大小来区分
-- 采用渐进式修改，不要一次修改太多
-- 生成的代码只保留必要的注释
-- 生成的代码不使用any类型，都要进行eslint检查和typescript类型检查
-- 对model层进行修改或新增时必须进行测试，测试覆盖率必须超过80%
-- 在types中创建或修改数据类型和DTO时，自动修改model逻辑、mock数据和单元测试
+### ESLint Configuration
+- Custom rules for unused variables (allows underscore prefix)
+- Special rules for shadcn/ui components (disables react-refresh warnings)
+- Prettier integration for consistent formatting
