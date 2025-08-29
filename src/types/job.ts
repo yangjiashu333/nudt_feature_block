@@ -13,8 +13,6 @@ export interface TrainStartRequest {
   config: TrainConfig;
 }
 
-export type TrainConfig = Record<string, unknown> & {};
-
 export type TrainStartReply = CommonReply & {
   celery_task_id: string;
   job_id: string;
@@ -58,6 +56,35 @@ export type TrainResultReply = TrainResult;
 // GET /api/val/result/<job_id>
 export type ValResultReply = ValResult;
 
+// SSE: Training log stream
+export type TrainLogEvent = TrainLogMetricEntry | TrainLogMessageEntry;
+
+export type TrainLogBase = {
+  // 原始行文本
+  raw: string;
+  // 可选的时间戳字符串，如 13:27:10
+  timestamp?: string;
+};
+
+export type TrainLogMetricEntry = TrainLogBase & {
+  type: 'metrics';
+  epoch: number;
+  // 百分比数值，例如 53.24 表示 53.24%
+  oa?: number;
+  kappa?: number;
+  // 分类准确率数组（若服务端提供）
+  clsAcc?: number[];
+  precision?: number;
+  recall?: number;
+  f1?: number;
+  loss?: number;
+};
+
+export type TrainLogMessageEntry = TrainLogBase & {
+  type: 'message';
+  message: string;
+};
+
 // Models
 export type TrainJob = {
   id: number;
@@ -77,6 +104,8 @@ export type TrainJob = {
   createTime: Date;
   updateTime: Date;
 };
+
+export type TrainConfig = Record<string, unknown> & {};
 
 export type TrainResult = Record<string, unknown> & {};
 

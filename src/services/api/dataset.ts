@@ -11,6 +11,6 @@ export const datasetApi = {
   },
 
   getImageUrl(image_path: string) {
-    return `${apiConfig.baseUrl}/api/images/file?image_path=${image_path}`;
+    return apiConfig.getUrl(`/api/images/file?image_path=${encodeURIComponent(image_path)}`);
   },
 };
