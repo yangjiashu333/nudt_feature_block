@@ -92,7 +92,7 @@ function toNumber(input: string | undefined | null): number | undefined {
 // Examples:
 // [13:27:10] epoch:0, OA: 53.24%, Kappa: 0.1970, cls Acc: [99.58, 26.24, 0.0], P:0.4552,R:0.4194,F1:0.3493,loss:0.93
 // [13:27:04] 开始训练
-export function parseTrainLogLine(line: string): TrainLogEvent {
+export function parseTrainLogLine(line: string | null | undefined): TrainLogEvent {
   const raw = line ?? '';
   let rest = raw.trim();
 

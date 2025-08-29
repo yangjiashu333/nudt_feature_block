@@ -53,7 +53,8 @@ http.interceptors.response.use(
       original: error,
     };
 
-    if (error.response?.status === 401) {
+    // 在测试环境下避免触发全局登出，以免干扰并发用例中的 MSW 会话状态
+    if (error.response?.status === 401 && import.meta.env.MODE !== 'test') {
       const { logout } = useAuthStore.getState();
       logout();
     }

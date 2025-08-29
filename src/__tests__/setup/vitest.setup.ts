@@ -19,6 +19,33 @@ const mockLocalStorage = {
 global.localStorage = mockLocalStorage as Storage;
 global.alert = vi.fn();
 
+// Mock EventSource for SSE tests
+class MockEventSource {
+  onmessage: (( _event: MessageEvent) => void) | null = null;
+  onerror: (( _event: Event) => void) | null = null;
+  
+  constructor(public url: string, public options?: EventSourceInit) {}
+  
+  close() {
+    // Mock close method
+  }
+  
+  dispatchEvent(_event: Event): boolean {
+    return true;
+  }
+  
+  addEventListener(_type: string, _listener: EventListener): void {
+    // Mock addEventListener
+  }
+  
+  removeEventListener(_type: string, _listener: EventListener): void {
+    // Mock removeEventListener
+  }
+}
+
+// @ts-expect-error: provide EventSource mock in Node env
+global.EventSource = MockEventSource;
+
 // MSW Server setup
 beforeAll(() => {
   server.listen();
