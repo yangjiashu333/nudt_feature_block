@@ -43,7 +43,7 @@ setInterval(() => {
 
 export const jobHandlers = [
   // POST /api/train/start - 开始训练任务
-  http.post<never, TrainStartRequest>('/api/train/start', async ({ request }) => {
+  http.post<never, TrainStartRequest>('*/api/train/start', async ({ request }) => {
     await delay(500); // 模拟API延迟
     
     const body = await request.json();
@@ -91,7 +91,7 @@ export const jobHandlers = [
   }),
 
   // POST /api/val/start - 开始验证任务
-  http.post<never, ValStartRequest>('/api/val/start', async ({ request }) => {
+  http.post<never, ValStartRequest>('*/api/val/start', async ({ request }) => {
     await delay(300);
     
     const body = await request.json();
@@ -142,7 +142,7 @@ export const jobHandlers = [
   }),
 
   // GET /api/train/status/<job_id> - 获取训练任务状态
-  http.get('/api/train/status/:jobId', async ({ params }) => {
+  http.get('*/api/train/status/:jobId', async ({ params }) => {
     await delay(50); // 大幅减少延迟
     
     try {
@@ -165,7 +165,7 @@ export const jobHandlers = [
   }),
 
   // GET /api/train - 获取训练任务列表
-  http.get('/api/train', async () => {
+  http.get('*/api/train', async () => {
     await delay(100); // 减少延迟
     
     try {
@@ -191,7 +191,7 @@ export const jobHandlers = [
   }),
 
   // GET /api/val - 获取验证任务列表
-  http.get('/api/val', async () => {
+  http.get('*/api/val', async () => {
     await delay(100); // 减少延迟
     
     try {
@@ -206,7 +206,7 @@ export const jobHandlers = [
   }),
 
   // GET /api/train/logs_file/<job_id> - 获取训练日志文件
-  http.get('/api/train/logs_file/:jobId', async ({ params }) => {
+  http.get('*/api/train/logs_file/:jobId', async ({ params }) => {
     await delay(400);
     
     const { jobId } = params;
@@ -220,7 +220,7 @@ export const jobHandlers = [
   }),
 
   // GET /api/train/result/<job_id> - 获取训练结果
-  http.get('/api/train/result/:jobId', async ({ params }) => {
+  http.get('*/api/train/result/:jobId', async ({ params }) => {
     await delay(300);
     
     const { jobId } = params;
@@ -237,7 +237,7 @@ export const jobHandlers = [
   }),
 
   // GET /api/val/result/<job_id> - 获取验证结果
-  http.get('/api/val/result/:jobId', async ({ params }) => {
+  http.get('*/api/val/result/:jobId', async ({ params }) => {
     await delay(250);
     
     const { jobId } = params;
@@ -254,7 +254,7 @@ export const jobHandlers = [
   }),
 
   // SSE /api/train/logs/<job_id> - 实时训练日志流
-  http.get('/api/train/logs/:jobId', async ({ params, request }) => {
+  http.get('*/api/train/logs/:jobId', async ({ params, request }) => {
     const { jobId } = params;
     
     // 检查任务是否存在且正在运行

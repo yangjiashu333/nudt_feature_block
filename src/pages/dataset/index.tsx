@@ -72,9 +72,9 @@ export default function DatasetPage() {
     <div className="container mx-auto max-w-7xl p-6 space-y-6">
       {/* Header Section */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-semibold tracking-tight">数据集</h1>
-          <p className="text-muted-foreground">管理和浏览机器学习训练数据集</p>
+        <div className="space-y-2">
+          <h1 className="text-xl font-semibold tracking-tight">数据集</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">管理和浏览机器学习训练数据集</p>
         </div>
       </div>
 

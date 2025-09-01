@@ -1,4 +1,4 @@
-import { ImagePlus, Database, User, Users } from 'lucide-react';
+import { ImagePlus, Database, User, Users, Loader2 } from 'lucide-react';
 import { useAuthStore } from '@/models/auth';
 
 import {
@@ -22,6 +22,12 @@ const items = [
     title: '数据集',
     url: '/dataset',
     icon: Database,
+    roles: ['admin', 'user'],
+  },
+  {
+    title: '任务',
+    url: '/job',
+    icon: Loader2,
     roles: ['admin', 'user'],
   },
   {
