@@ -4,6 +4,7 @@ import { featureHandlers } from './feature';
 import { datasetHandlers } from './dataset';
 import { backboneHandlers } from './backbone';
 import { classifierHandlers } from './classifier';
+import { jobHandlers } from './job';
 
 export const handlers = [
   ...authHandlers,
@@ -12,4 +13,5 @@ export const handlers = [
   ...datasetHandlers,
   ...backboneHandlers,
   ...classifierHandlers,
+  ...jobHandlers,
 ];
