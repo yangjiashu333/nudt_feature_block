@@ -113,9 +113,9 @@ describe('BackboneStore', () => {
       await getBackboneList();
 
       const state = useBackboneStore.getState();
-      
-      const backboneWithSchema = state.backbones.find(b => b.params_schema);
-      const backboneWithoutSchema = state.backbones.find(b => !b.params_schema);
+
+      const backboneWithSchema = state.backbones.find((b) => b.params_schema);
+      const backboneWithoutSchema = state.backbones.find((b) => !b.params_schema);
 
       expect(backboneWithSchema).toBeDefined();
       expect(backboneWithoutSchema).toBeDefined();
@@ -130,11 +130,7 @@ describe('BackboneStore', () => {
     it('should handle multiple concurrent requests', async () => {
       const { getBackboneList } = useBackboneStore.getState();
 
-      const promises = [
-        getBackboneList(),
-        getBackboneList(),
-        getBackboneList(),
-      ];
+      const promises = [getBackboneList(), getBackboneList(), getBackboneList()];
 
       await Promise.all(promises);
 

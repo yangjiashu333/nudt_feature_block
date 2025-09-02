@@ -1,21 +1,30 @@
+import { useNavigate } from 'react-router';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { useJobStore } from '@/models/job';
+import JobStatusBadge from './job-status-badge';
 import type { JobWithValidation } from '@/models/job';
 
 type Props = {
   jobs: JobWithValidation[];
-  onRowClick?: (job: JobWithValidation) => void;
 };
 
-export default function JobTable({ jobs, onRowClick }: Props) {
-  const statusBadge = (s: JobWithValidation['status']) => (
-    <Badge
-      variant={s === 'running' ? 'secondary' : s === 'pending' ? 'outline' : s === 'failed' ? 'destructive' : 'default'}
-    >
-      {s}
-    </Badge>
-  );
+export default function JobTable({ jobs }: Props) {
+  const navigate = useNavigate();
+  const { selectJob } = useJobStore();
+  const handleTaskTitleClick = (job: JobWithValidation) => {
+    selectJob(job);
+    navigate('/job/detail');
+  };
+
 
   return (
     <Table>
@@ -30,14 +39,25 @@ export default function JobTable({ jobs, onRowClick }: Props) {
       </TableHeader>
       <TableBody>
         {jobs.map((job) => (
-          <TableRow key={job.job_id} onClick={() => onRowClick?.(job)} className="cursor-pointer">
-            <TableCell className="font-medium max-w-[220px] truncate">{job.job_id}</TableCell>
-            <TableCell>{statusBadge(job.status)}</TableCell>
+          <TableRow key={job.job_id}>
+            <TableCell className="font-medium max-w-[220px] truncate">
+              <button
+                onClick={() => handleTaskTitleClick(job)}
+                className="text-left hover:text-primary hover:underline transition-colors"
+              >
+                {job.job_id}
+              </button>
+            </TableCell>
+            <TableCell><JobStatusBadge status={job.status} /></TableCell>
             <TableCell className="min-w-[160px]">
               <Progress value={Math.round(job.progress)} />
             </TableCell>
             <TableCell>
-              {job.validationJob ? <Badge variant="secondary">已测试</Badge> : <Badge variant="outline">未测试</Badge>}
+              {job.validationJob ? (
+                <Badge variant="secondary">已测试</Badge>
+              ) : (
+                <Badge variant="outline">未测试</Badge>
+              )}
             </TableCell>
             <TableCell>{new Date(job.createTime).toLocaleString()}</TableCell>
           </TableRow>
@@ -46,4 +66,3 @@ export default function JobTable({ jobs, onRowClick }: Props) {
     </Table>
   );
 }
-

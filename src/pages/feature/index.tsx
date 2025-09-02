@@ -88,7 +88,9 @@ export default function FeaturePage() {
       <div className="flex items-center justify-between">
         <div className="space-y-2">
           <h1 className="text-xl font-semibold tracking-tight">特征算子</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">管理和组织数据管道中的特征处理算子</p>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            管理和组织数据管道中的特征处理算子
+          </p>
         </div>
         <Button onClick={handleAddFeature} size="lg" className="gap-2">
           <Plus className="h-4 w-4" />

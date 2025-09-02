@@ -1,18 +1,11 @@
 import { useEffect, useMemo } from 'react';
 import { useJobStore } from '@/models/job';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import JobTable from '@/components/job/job-table';
 
 export default function JobPage() {
-  const {
-    trainJobs,
-    isLoading,
-    fetchJobs,
-    startPolling,
-    stopPolling,
-  } = useJobStore();
+  const { trainJobs, isLoading, fetchJobs, startPolling, stopPolling } = useJobStore();
 
   useEffect(() => {
     fetchJobs();
@@ -22,21 +15,23 @@ export default function JobPage() {
 
   const stats = useMemo(() => {
     const total = trainJobs.length;
-    const running = trainJobs.filter(j => j.status === 'running').length;
-    const pending = trainJobs.filter(j => j.status === 'pending').length;
-    const done = trainJobs.filter(j => j.status === 'done').length;
-    const failed = trainJobs.filter(j => j.status === 'failed').length;
+    const running = trainJobs.filter((j) => j.status === 'running').length;
+    const pending = trainJobs.filter((j) => j.status === 'pending').length;
+    const done = trainJobs.filter((j) => j.status === 'done').length;
+    const failed = trainJobs.filter((j) => j.status === 'failed').length;
     return { total, running, pending, done, failed };
   }, [trainJobs]);
 
   return (
     <div className="container mx-auto max-w-7xl p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <div className='space-y-2'>
+        <div className="space-y-2">
           <h1 className="text-xl font-semibold tracking-tight">任务管理</h1>
           <p className="text-muted-foreground">查看训练/验证任务状态与进度</p>
         </div>
-        <Button variant="secondary" onClick={() => fetchJobs()}>刷新</Button>
+        <Button variant="secondary" onClick={() => fetchJobs()}>
+          刷新
+        </Button>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -50,45 +45,25 @@ export default function JobPage() {
           <CardHeader>
             <CardTitle>执行中</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-semibold">{stats.running}</span>
-              <Badge variant="secondary">running</Badge>
-            </div>
-          </CardContent>
+          <CardContent className="text-2xl font-semibold">{stats.running}</CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle>待执行</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-semibold">{stats.pending}</span>
-              <Badge variant="outline">pending</Badge>
-            </div>
-          </CardContent>
+          <CardContent className="text-2xl font-semibold">{stats.pending}</CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle>完成</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-semibold">{stats.done}</span>
-              <Badge>done</Badge>
-            </div>
-          </CardContent>
+          <CardContent className="text-2xl font-semibold">{stats.done}</CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle>失败</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-semibold">{stats.failed}</span>
-              <Badge variant="destructive">failed</Badge>
-            </div>
-          </CardContent>
+          <CardContent className="text-2xl font-semibold">{stats.failed}</CardContent>
         </Card>
       </div>
 

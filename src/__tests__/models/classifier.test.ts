@@ -113,9 +113,9 @@ describe('ClassifierStore', () => {
       await getClassifierList();
 
       const state = useClassifierStore.getState();
-      
-      const classifierWithSchema = state.classifiers.find(c => c.params_schema);
-      const classifierWithoutSchema = state.classifiers.find(c => !c.params_schema);
+
+      const classifierWithSchema = state.classifiers.find((c) => c.params_schema);
+      const classifierWithoutSchema = state.classifiers.find((c) => !c.params_schema);
 
       expect(classifierWithSchema).toBeDefined();
       expect(classifierWithoutSchema).toBeDefined();
@@ -132,7 +132,7 @@ describe('ClassifierStore', () => {
       await getClassifierList();
 
       const state = useClassifierStore.getState();
-      const classifierNames = state.classifiers.map(c => c.name);
+      const classifierNames = state.classifiers.map((c) => c.name);
 
       expect(classifierNames).toContain('SVM');
       expect(classifierNames).toContain('Random Forest');
@@ -147,12 +147,12 @@ describe('ClassifierStore', () => {
       await getClassifierList();
 
       const state = useClassifierStore.getState();
-      const classifiersWithSchema = state.classifiers.filter(c => c.params_schema);
+      const classifiersWithSchema = state.classifiers.filter((c) => c.params_schema);
 
       for (const classifier of classifiersWithSchema) {
         const schema = JSON.parse(classifier.params_schema!);
         expect(typeof schema).toBe('object');
-        
+
         for (const [key, value] of Object.entries(schema)) {
           expect(typeof key).toBe('string');
           expect(typeof value).toBe('object');
@@ -166,11 +166,7 @@ describe('ClassifierStore', () => {
     it('should handle multiple concurrent requests', async () => {
       const { getClassifierList } = useClassifierStore.getState();
 
-      const promises = [
-        getClassifierList(),
-        getClassifierList(),
-        getClassifierList(),
-      ];
+      const promises = [getClassifierList(), getClassifierList(), getClassifierList()];
 
       await Promise.all(promises);
 
@@ -183,10 +179,10 @@ describe('ClassifierStore', () => {
   describe('state management', () => {
     it('should maintain state across multiple calls', async () => {
       const { getClassifierList } = useClassifierStore.getState();
-      
+
       await getClassifierList();
       const firstState = useClassifierStore.getState();
-      
+
       await getClassifierList();
       const secondState = useClassifierStore.getState();
 
@@ -196,7 +192,7 @@ describe('ClassifierStore', () => {
 
     it('should allow manual state updates', () => {
       const customClassifiers = [
-        { id: 999, name: 'Custom Classifier', description: 'Test classifier' }
+        { id: 999, name: 'Custom Classifier', description: 'Test classifier' },
       ];
 
       useClassifierStore.setState({ classifiers: customClassifiers });

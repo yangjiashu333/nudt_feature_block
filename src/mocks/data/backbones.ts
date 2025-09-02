@@ -42,7 +42,11 @@ export const mockBackbones: Backbone[] = [
     description: 'Densely connected convolutional networks',
     params_schema: JSON.stringify({
       growth_rate: { type: 'integer', default: 32, description: 'Growth rate' },
-      num_init_features: { type: 'integer', default: 64, description: 'Number of initial features' },
+      num_init_features: {
+        type: 'integer',
+        default: 64,
+        description: 'Number of initial features',
+      },
       drop_rate: { type: 'number', default: 0.0, description: 'Drop rate' },
     }),
   },
