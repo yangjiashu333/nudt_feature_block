@@ -9,6 +9,7 @@ import Dataset from './pages/dataset';
 import Feature from './pages/feature';
 import JobPage from './pages/job';
 import TaskDetailPage from './pages/job/detail';
+import CreateJobPage from './pages/job/create';
 import User from './pages/user';
 import { apiConfig } from '@/config/env';
 
@@ -46,6 +47,7 @@ enableMocking().then(() => {
             <Route index element={<Navigate to="/dataset" replace />} />
             <Route path="dataset" element={<Dataset />} />
             <Route path="job" element={<JobPage />} />
+            <Route path="job/create" element={<CreateJobPage />} />
             <Route path="job/detail" element={<TaskDetailPage />} />
             <Route path="feature" element={<Feature />} />
             <Route path="user" element={<User />} />

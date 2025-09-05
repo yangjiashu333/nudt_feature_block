@@ -1,10 +1,13 @@
 import { useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router';
+import { Plus } from 'lucide-react';
 import { useJobStore } from '@/models/job';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import JobTable from '@/components/job/job-table';
 
 export default function JobPage() {
+  const navigate = useNavigate();
   const { trainJobs, isLoading, fetchJobs, startPolling, stopPolling } = useJobStore();
 
   useEffect(() => {
@@ -29,8 +32,9 @@ export default function JobPage() {
           <h1 className="text-xl font-semibold tracking-tight">任务管理</h1>
           <p className="text-muted-foreground">查看训练/验证任务状态与进度</p>
         </div>
-        <Button variant="secondary" onClick={() => fetchJobs()}>
-          刷新
+        <Button size="lg" className="gap-2" onClick={() => navigate('/job/create')}>
+          <Plus className="h-4 w-4" />
+          创建任务
         </Button>
       </div>
 

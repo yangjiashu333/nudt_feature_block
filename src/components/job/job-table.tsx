@@ -20,7 +20,7 @@ type Props = {
 export default function JobTable({ jobs }: Props) {
   const navigate = useNavigate();
   const { selectJob } = useJobStore();
-  const handleTaskTitleClick = (job: JobWithValidation) => {
+  const handleRowClick = (job: JobWithValidation) => {
     selectJob(job);
     navigate('/job/detail');
   };
@@ -38,20 +38,24 @@ export default function JobTable({ jobs }: Props) {
       </TableHeader>
       <TableBody>
         {jobs.map((job) => (
-          <TableRow key={job.job_id}>
+          <TableRow
+            key={job.job_id}
+            onClick={() => handleRowClick(job)}
+            className="cursor-pointer hover:bg-muted/50"
+          >
             <TableCell className="font-medium max-w-[220px] truncate">
-              <button
-                onClick={() => handleTaskTitleClick(job)}
-                className="text-left hover:text-primary hover:underline transition-colors"
-              >
-                {job.job_id}
-              </button>
+              {job.job_id}
             </TableCell>
             <TableCell>
               <JobStatusBadge status={job.status} />
             </TableCell>
-            <TableCell className="min-w-[160px]">
-              <Progress value={Math.round(job.progress)} />
+            <TableCell className="min-w-[200px]">
+              <div className="flex items-center gap-2">
+                <Progress value={Math.round(job.progress)} />
+                <span className="text-sm text-muted-foreground tabular-nums">
+                  {Math.round(job.progress)}%
+                </span>
+              </div>
             </TableCell>
             <TableCell>
               {job.validationJob ? (

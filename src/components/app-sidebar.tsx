@@ -19,15 +19,15 @@ import { NavLink } from 'react-router';
 // Menu items.
 const items = [
   {
-    title: '数据集',
-    url: '/dataset',
-    icon: Database,
+    title: '任务管理',
+    url: '/job',
+    icon: Loader2,
     roles: ['admin', 'user'],
   },
   {
-    title: '任务',
-    url: '/job',
-    icon: Loader2,
+    title: '数据集',
+    url: '/dataset',
+    icon: Database,
     roles: ['admin', 'user'],
   },
   {
