@@ -25,7 +25,6 @@ export default function JobTable({ jobs }: Props) {
     navigate('/job/detail');
   };
 
-
   return (
     <Table>
       <TableHeader>
@@ -48,7 +47,9 @@ export default function JobTable({ jobs }: Props) {
                 {job.job_id}
               </button>
             </TableCell>
-            <TableCell><JobStatusBadge status={job.status} /></TableCell>
+            <TableCell>
+              <JobStatusBadge status={job.status} />
+            </TableCell>
             <TableCell className="min-w-[160px]">
               <Progress value={Math.round(job.progress)} />
             </TableCell>

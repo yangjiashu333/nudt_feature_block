@@ -51,7 +51,7 @@ export default function TaskDetailPage() {
             <>
               <TaskBasicInfo job={selectedJob} />
               <StaticLogs job={selectedJob} />
-              <TrainingTestResults job={selectedJob} validationJob={validationJob} />
+              <TrainingTestResults trainJob={selectedJob} valJob={validationJob} />
             </>
           );
         } else {

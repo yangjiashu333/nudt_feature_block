@@ -36,12 +36,11 @@ export const useDatasetStore = create<DatasetState>((set, get) => ({
   },
 
   getImageList: async (datasetId: number) => {
-    set({ isLoading: true });
     try {
       const response = await datasetApi.getImageList(datasetId);
       set({ images: response });
-    } finally {
-      set({ isLoading: false });
+    } catch {
+      /* empty */
     }
   },
 

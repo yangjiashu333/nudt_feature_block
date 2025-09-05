@@ -1,5 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -41,12 +40,6 @@ export default function TrainingResults({ job }: Props) {
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>训练结果</CardTitle>
-          <Badge variant="default">仅训练结果</Badge>
-        </div>
-      </CardHeader>
       <CardContent className="space-y-6">
         {/* Overall Metrics */}
         <div>

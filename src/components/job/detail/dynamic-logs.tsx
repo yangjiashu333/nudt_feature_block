@@ -71,10 +71,9 @@ export default function DynamicLogs({ job }: Props) {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>动态日志</CardTitle>
+          <CardTitle>训练日志</CardTitle>
           <div className="flex items-center gap-2">
             <Badge variant={connectionStatus.variant}>{connectionStatus.text}</Badge>
-            <Badge variant="secondary">运行中</Badge>
           </div>
         </div>
       </CardHeader>
@@ -94,11 +93,6 @@ export default function DynamicLogs({ job }: Props) {
             )}
           </div>
         </ScrollArea>
-
-        <div className="mt-4 flex justify-between items-center text-xs text-muted-foreground">
-          <span>实时日志总数: {logs.length} 条</span>
-          <span>自动滚动至最新</span>
-        </div>
       </CardContent>
     </Card>
   );

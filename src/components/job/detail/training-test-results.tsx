@@ -1,16 +1,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import type { JobWithValidation } from '@/models/job';
-import type { ValJob } from '@/types/job';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import type { TrainJob, ValJob } from '@/types/job';
 
 type Props = {
-  job: JobWithValidation;
-  validationJob: ValJob;
+  trainJob: TrainJob;
+  valJob: ValJob;
 };
 
-export default function TrainingTestResults({ job, validationJob }: Props) {
+export default function TrainingTestResults({ trainJob: job, valJob: validationJob }: Props) {
   // TODO: Replace with actual result data from job.result and validationJob.result
   const mockResults = {
     training: {
@@ -19,7 +24,7 @@ export default function TrainingTestResults({ job, validationJob }: Props) {
       precision: 0.8756,
       recall: 0.8634,
       f1: 0.8695,
-      loss: 0.2456
+      loss: 0.2456,
     },
     testing: {
       accuracy: 84.2,
@@ -27,46 +32,46 @@ export default function TrainingTestResults({ job, validationJob }: Props) {
       precision: 0.8534,
       recall: 0.8412,
       f1: 0.8473,
-      loss: 0.2891
+      loss: 0.2891,
     },
     classComparison: [
-      { 
-        className: 'Class 1', 
-        trainPrecision: 0.89, 
+      {
+        className: 'Class 1',
+        trainPrecision: 0.89,
         testPrecision: 0.86,
-        trainRecall: 0.87, 
+        trainRecall: 0.87,
         testRecall: 0.84,
-        trainF1: 0.88, 
-        testF1: 0.85
+        trainF1: 0.88,
+        testF1: 0.85,
       },
-      { 
-        className: 'Class 2', 
-        trainPrecision: 0.85, 
+      {
+        className: 'Class 2',
+        trainPrecision: 0.85,
         testPrecision: 0.83,
-        trainRecall: 0.91, 
+        trainRecall: 0.91,
         testRecall: 0.89,
-        trainF1: 0.88, 
-        testF1: 0.86
+        trainF1: 0.88,
+        testF1: 0.86,
       },
-      { 
-        className: 'Class 3', 
-        trainPrecision: 0.92, 
+      {
+        className: 'Class 3',
+        trainPrecision: 0.92,
         testPrecision: 0.88,
-        trainRecall: 0.84, 
+        trainRecall: 0.84,
         testRecall: 0.81,
-        trainF1: 0.88, 
-        testF1: 0.84
+        trainF1: 0.88,
+        testF1: 0.84,
       },
-      { 
-        className: 'Class 4', 
-        trainPrecision: 0.81, 
+      {
+        className: 'Class 4',
+        trainPrecision: 0.81,
         testPrecision: 0.79,
-        trainRecall: 0.86, 
+        trainRecall: 0.86,
         testRecall: 0.83,
-        trainF1: 0.83, 
-        testF1: 0.81
+        trainF1: 0.83,
+        testF1: 0.81,
       },
-    ]
+    ],
   };
 
   const getDifferenceColor = (trainValue: number, testValue: number) => {
@@ -83,15 +88,6 @@ export default function TrainingTestResults({ job, validationJob }: Props) {
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>训练测试结果对比</CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge variant="default">已训练</Badge>
-            <Badge variant="secondary">已测试</Badge>
-          </div>
-        </div>
-      </CardHeader>
       <CardContent>
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
@@ -171,10 +167,18 @@ export default function TrainingTestResults({ job, validationJob }: Props) {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead rowSpan={2} className="border-r">类别</TableHead>
-                    <TableHead colSpan={3} className="text-center border-r">训练结果</TableHead>
-                    <TableHead colSpan={3} className="text-center border-r">测试结果</TableHead>
-                    <TableHead colSpan={3} className="text-center">差异</TableHead>
+                    <TableHead rowSpan={2} className="border-r">
+                      类别
+                    </TableHead>
+                    <TableHead colSpan={3} className="text-center border-r">
+                      训练结果
+                    </TableHead>
+                    <TableHead colSpan={3} className="text-center border-r">
+                      测试结果
+                    </TableHead>
+                    <TableHead colSpan={3} className="text-center">
+                      差异
+                    </TableHead>
                   </TableRow>
                   <TableRow>
                     <TableHead>精确率</TableHead>
@@ -198,10 +202,14 @@ export default function TrainingTestResults({ job, validationJob }: Props) {
                       <TableCell>{metric.testPrecision.toFixed(4)}</TableCell>
                       <TableCell>{metric.testRecall.toFixed(4)}</TableCell>
                       <TableCell className="border-r">{metric.testF1.toFixed(4)}</TableCell>
-                      <TableCell className={getDifferenceColor(metric.trainPrecision, metric.testPrecision)}>
+                      <TableCell
+                        className={getDifferenceColor(metric.trainPrecision, metric.testPrecision)}
+                      >
                         {formatDifference(metric.trainPrecision, metric.testPrecision)}
                       </TableCell>
-                      <TableCell className={getDifferenceColor(metric.trainRecall, metric.testRecall)}>
+                      <TableCell
+                        className={getDifferenceColor(metric.trainRecall, metric.testRecall)}
+                      >
                         {formatDifference(metric.trainRecall, metric.testRecall)}
                       </TableCell>
                       <TableCell className={getDifferenceColor(metric.trainF1, metric.testF1)}>
@@ -256,16 +264,11 @@ export default function TrainingTestResults({ job, validationJob }: Props) {
                 </div>
               </div>
             </div>
-
-            <div className="text-xs text-muted-foreground">
-              {/* TODO: Add more sophisticated analysis charts and metrics */}
-              提示：实际分析数据将从训练和测试结果计算得出
-            </div>
           </TabsContent>
         </Tabs>
 
         <div className="mt-4 text-xs text-muted-foreground">
-          训练任务ID: {job.job_id} | 测试任务ID: {validationJob.val_job_id}
+          测试任务ID: {validationJob.val_job_id}
         </div>
       </CardContent>
     </Card>

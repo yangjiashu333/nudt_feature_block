@@ -263,15 +263,13 @@ export const useJobStore = create<JobState>()(
         }
       },
 
-      // 清理所有资源
+      // 清理连接等临时资源（不清空持久化数据）
       cleanup: () => {
         const { stopPolling, disconnectFromLogs } = get();
         stopPolling();
         disconnectFromLogs();
         set({
-          trainJobs: [],
-          validationJobs: [],
-          selectedJob: null,
+          // 仅复位非持久化字段，避免刷新导致已持久化的数据被清空
           logs: [],
           error: null,
           isLoading: false,

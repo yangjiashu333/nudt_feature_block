@@ -38,10 +38,7 @@ export default function JobStatusBadge({ status, size = 'default' }: Props) {
   };
 
   return (
-    <Badge 
-      variant={getVariant(status)}
-      className={size === 'sm' ? 'text-xs px-2 py-0.5' : ''}
-    >
+    <Badge variant={getVariant(status)} className={size === 'sm' ? 'text-xs px-2 py-0.5' : ''}>
       {getStatusText(status)}
     </Badge>
   );
