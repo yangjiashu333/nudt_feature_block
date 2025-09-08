@@ -4,7 +4,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { useJobStore } from '@/models/job';
 import type { JobWithValidation } from '@/models/job';
-import type { TrainLogEvent } from '@/types/job';
 
 type Props = {
   job: JobWithValidation;
@@ -20,9 +19,8 @@ export default function DynamicLogs({ job }: Props) {
     }
 
     return () => {
-      if (job.status !== 'running') {
-        disconnectFromLogs();
-      }
+      // 离开详情页时，无论状态如何，清理 SSE 连接
+      disconnectFromLogs();
     };
   }, [job.job_id, job.status, connectToLogs, disconnectFromLogs]);
 
@@ -31,22 +29,6 @@ export default function DynamicLogs({ job }: Props) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
   }, [logs]);
-
-  const formatLogEntry = (log: TrainLogEvent) => {
-    if (log.type === 'metrics') {
-      const metrics = [];
-      if (log.oa !== undefined) metrics.push(`OA: ${log.oa.toFixed(2)}%`);
-      if (log.kappa !== undefined) metrics.push(`Kappa: ${log.kappa.toFixed(4)}`);
-      if (log.loss !== undefined) metrics.push(`Loss: ${log.loss.toFixed(4)}`);
-      if (log.precision !== undefined) metrics.push(`Precision: ${log.precision.toFixed(4)}`);
-      if (log.recall !== undefined) metrics.push(`Recall: ${log.recall.toFixed(4)}`);
-      if (log.f1 !== undefined) metrics.push(`F1: ${log.f1.toFixed(4)}`);
-
-      return `[${log.timestamp || ''}] Epoch ${log.epoch}: ${metrics.join(', ')}`;
-    }
-
-    return log.raw || log.message || JSON.stringify(log);
-  };
 
   const getConnectionStatus = () => {
     if (!sseConnection) {
@@ -61,7 +43,7 @@ export default function DynamicLogs({ job }: Props) {
       case EventSource.CLOSED:
         return { status: 'disconnected', text: '已断开', variant: 'outline' as const };
       default:
-        return { status: 'unknown', text: '未知状态', variant: 'destructive' as const };
+        return { status: 'unknown', text: '未知', variant: 'default' as const };
     }
   };
 
@@ -87,7 +69,7 @@ export default function DynamicLogs({ job }: Props) {
             ) : (
               logs.map((log, index) => (
                 <div key={index} className="text-sm font-mono break-all">
-                  {formatLogEntry(log)}
+                  {log.raw}
                 </div>
               ))
             )}

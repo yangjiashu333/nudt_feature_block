@@ -6,7 +6,6 @@ import type {
   TrainStatusReply,
   TrainJobList,
   ValJobLIst,
-  TrainLogReply,
   TrainResultReply,
   ValResultReply,
 } from '@/types/job';
@@ -28,8 +27,13 @@ export const jobApi = {
     return await httpService.get<TrainJobList>('/api/train');
   },
 
-  async getTrainLogs(jobId: string): Promise<TrainLogReply> {
-    return await httpService.get<TrainLogReply>(`/api/train/logs_file/${jobId}`);
+  async getTrainLogs(jobId: string): Promise<TrainLogEvent[]> {
+    const res = await httpService.get<{ log: string }>(`/api/train/logs_file/${jobId}`);
+    const lines = (res.log || '')
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0);
+    return lines.map((line) => parseTrainLogLine(line));
   },
 
   async getTrainResult(jobId: string): Promise<TrainResultReply> {

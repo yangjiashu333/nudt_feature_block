@@ -6,14 +6,16 @@ import { ArrowLeft } from 'lucide-react';
 import TaskBasicInfo from '@/components/job/detail/task-basic-info';
 import StaticLogs from '@/components/job/detail/static-logs';
 import DynamicLogs from '@/components/job/detail/dynamic-logs';
-import TrainingResults from '@/components/job/detail/training-results';
-import TrainingTestResults from '@/components/job/detail/training-test-results';
+import TrainResult from '@/components/job/detail/train-result';
+import TrainValResult from '@/components/job/detail/train-val-result';
 
 export default function TaskDetailPage() {
   const navigate = useNavigate();
   const { selectedJob } = useJobStore();
 
   const handleBackClick = () => {
+    // 返回列表时清空选中任务
+    useJobStore.setState({ selectedJob: null });
     navigate('/job');
   };
 
@@ -51,7 +53,7 @@ export default function TaskDetailPage() {
             <>
               <TaskBasicInfo job={selectedJob} />
               <StaticLogs job={selectedJob} />
-              <TrainingTestResults trainJob={selectedJob} valJob={validationJob} />
+              <TrainValResult trainJob={selectedJob} valJob={validationJob} />
             </>
           );
         } else {
@@ -59,7 +61,7 @@ export default function TaskDetailPage() {
             <>
               <TaskBasicInfo job={selectedJob} />
               <StaticLogs job={selectedJob} />
-              <TrainingResults job={selectedJob} />
+              <TrainResult job={selectedJob} />
             </>
           );
         }

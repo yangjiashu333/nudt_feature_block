@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useJobStore } from '@/models/job';
 import type { JobWithValidation } from '@/models/job';
 
 type Props = {
@@ -8,38 +9,13 @@ type Props = {
 };
 
 export default function StaticLogs({ job }: Props) {
-  const [logs] = useState<string[]>([
-    '[13:27:10] Starting training process...',
-    '[13:27:15] Loading dataset...',
-    '[13:27:20] Dataset loaded: 1000 samples',
-    '[13:27:25] Initializing model...',
-    '[13:27:30] Model initialized successfully',
-    '[13:27:35] Starting epoch 1/10',
-    '[13:28:00] Epoch 1 completed - Loss: 0.856, Accuracy: 65.2%',
-    '[13:28:05] Starting epoch 2/10',
-    '[13:28:30] Epoch 2 completed - Loss: 0.743, Accuracy: 71.8%',
-    '[13:28:35] Training completed successfully',
-    '[13:27:10] Starting training process...',
-    '[13:27:15] Loading dataset...',
-    '[13:27:20] Dataset loaded: 1000 samples',
-    '[13:27:25] Initializing model...',
-    '[13:27:30] Model initialized successfully',
-    '[13:27:35] Starting epoch 1/10',
-    '[13:28:00] Epoch 1 completed - Loss: 0.856, Accuracy: 65.2%',
-    '[13:28:05] Starting epoch 2/10',
-    '[13:28:30] Epoch 2 completed - Loss: 0.743, Accuracy: 71.8%',
-    '[13:28:35] Training completed successfully',
-    '[13:27:10] Starting training process...',
-    '[13:27:15] Loading dataset...',
-    '[13:27:20] Dataset loaded: 1000 samples',
-    '[13:27:25] Initializing model...',
-    '[13:27:30] Model initialized successfully',
-    '[13:27:35] Starting epoch 1/10',
-    '[13:28:00] Epoch 1 completed - Loss: 0.856, Accuracy: 65.2%',
-    '[13:28:05] Starting epoch 2/10',
-    '[13:28:30] Epoch 2 completed - Loss: 0.743, Accuracy: 71.8%',
-    '[13:28:35] Training completed successfully',
-  ]);
+  const { logs, fetchStaticLogs } = useJobStore();
+  useEffect(() => {
+    if (job.status === 'done' || job.status === 'failed') {
+      fetchStaticLogs(job.job_id);
+    }
+  }, [job.job_id, job.status, fetchStaticLogs]);
+
   return (
     <Card>
       <CardHeader>
@@ -53,7 +29,7 @@ export default function StaticLogs({ job }: Props) {
             ) : (
               logs.map((log, index) => (
                 <div key={index} className="text-sm font-mono break-all">
-                  {log}
+                  { log.raw }
                 </div>
               ))
             )}
