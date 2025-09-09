@@ -5,13 +5,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import {
@@ -21,9 +19,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useDatasetStore } from '@/models/dataset';
 import { useBackboneStore } from '@/models/backbone';
 import { useClassifierStore } from '@/models/classifier';
+import { useFeatureStore } from '@/models/feature';
 import { useAuthStore } from '@/models/auth';
 import { jobApi } from '@/services/api/job';
 import { toast } from 'sonner';
@@ -34,6 +34,7 @@ const formSchema = z.object({
   dataset_id: z.string().min(1, { message: '请选择数据集' }),
   backbone_id: z.string().min(1, { message: '请选择骨干网络' }),
   classifier_id: z.string().min(1, { message: '请选择分类器' }),
+  feature_ids: z.array(z.string()).min(1, { message: '请至少选择一个特征' }),
   adaptive: z.enum(ADAPTIVE_OPTIONS, { message: '请选择是否自适应' }),
 });
 
@@ -46,6 +47,7 @@ export default function CreateJobPage() {
   const { datasets, isLoading: datasetLoading, getDatasetList } = useDatasetStore();
   const { backbones, isLoading: backboneLoading, getBackboneList } = useBackboneStore();
   const { classifiers, isLoading: classifierLoading, getClassifierList } = useClassifierStore();
+  const { features, isLoading: featureLoading, getFeatureList } = useFeatureStore();
   const { user } = useAuthStore();
 
   const [submitting, setSubmitting] = useState(false);
@@ -54,9 +56,10 @@ export default function CreateJobPage() {
     getDatasetList();
     getBackboneList();
     getClassifierList();
-  }, [getDatasetList, getBackboneList, getClassifierList]);
+    getFeatureList();
+  }, [getDatasetList, getBackboneList, getClassifierList, getFeatureList]);
 
-  const isLoading = datasetLoading || backboneLoading || classifierLoading;
+  const isLoading = datasetLoading || backboneLoading || classifierLoading || featureLoading;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -64,6 +67,7 @@ export default function CreateJobPage() {
       dataset_id: '',
       backbone_id: '',
       classifier_id: '',
+      feature_ids: [],
       adaptive: '0',
     },
   });
@@ -77,8 +81,10 @@ export default function CreateJobPage() {
         form.setValue('backbone_id', String(backbones[0].id));
       if (classifiers[0] && !form.getValues('classifier_id'))
         form.setValue('classifier_id', String(classifiers[0].id));
+      if (features.length > 0 && form.getValues('feature_ids').length === 0)
+        form.setValue('feature_ids', [String(features[0].id)]);
     }
-  }, [isLoading, datasets, backbones, classifiers, form]);
+  }, [isLoading, datasets, backbones, classifiers, features, form]);
 
   const handleSubmit = async (values: FormValues) => {
     if (!user?.id) {
@@ -88,11 +94,14 @@ export default function CreateJobPage() {
 
     setSubmitting(true);
     try {
+      const selectedFeatureIds = values.feature_ids.map((id) => Number(id));
       const payload = {
         user_id: user.id,
         dataset_id: Number(values.dataset_id),
         backbone_id: Number(values.backbone_id),
         classifier_id: Number(values.classifier_id),
+        feature_ids:
+          selectedFeatureIds.length === 1 ? selectedFeatureIds[0] : selectedFeatureIds,
         adaptive: Number(values.adaptive) as 0 | 1,
         nodes: {},
         config: {},
@@ -118,7 +127,7 @@ export default function CreateJobPage() {
   );
 
   return (
-    <div className="container mx-auto max-w-7xl p-6 space-y-6">
+    <div className="container mx-auto max-w-7xl p-6 space-y-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="sm" onClick={handleBackClick}>
@@ -126,24 +135,22 @@ export default function CreateJobPage() {
           </Button>
           <div className="space-y-2">
             <h1 className="text-xl font-semibold tracking-tight">创建任务</h1>
-            <p className="text-muted-foreground">选择数据集、骨干网络与分类器以启动训练</p>
+            <p className="text-muted-foreground">按步骤配置训练所需的参数并提交</p>
           </div>
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>训练任务配置</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-6 sm:grid-cols-2">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+          {/* 数据集 */}
+          <div className="space-y-2">
+            <h2 className="text-base font-medium">选择数据集</h2>
+            <p className="text-sm text-muted-foreground">用于训练的数据来源。</p>
               <FormField
                 control={form.control}
                 name="dataset_id"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>数据集</FormLabel>
+                  <FormItem className="max-w-md">
                     <Select
                       value={field.value}
                       onValueChange={field.onChange}
@@ -167,12 +174,17 @@ export default function CreateJobPage() {
                 )}
               />
 
+          </div>
+
+          {/* 骨干网络 */}
+          <div className="space-y-2">
+            <h2 className="text-base font-medium">选择骨干网络</h2>
+            <p className="text-sm text-muted-foreground">用于特征提取或表示学习的基础网络。</p>
               <FormField
                 control={form.control}
                 name="backbone_id"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>骨干网络</FormLabel>
+                  <FormItem className="max-w-md">
                     <Select
                       value={field.value}
                       onValueChange={field.onChange}
@@ -196,12 +208,17 @@ export default function CreateJobPage() {
                 )}
               />
 
+          </div>
+
+          {/* 分类器 */}
+          <div className="space-y-2">
+            <h2 className="text-base font-medium">选择分类器</h2>
+            <p className="text-sm text-muted-foreground">用于最终任务输出的判别模块。</p>
               <FormField
                 control={form.control}
                 name="classifier_id"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>分类器</FormLabel>
+                  <FormItem className="max-w-md">
                     <Select
                       value={field.value}
                       onValueChange={field.onChange}
@@ -225,12 +242,53 @@ export default function CreateJobPage() {
                 )}
               />
 
-              <FormField
+          </div>
+
+          {/* 特征（多选） */}
+          <div className="space-y-2">
+            <h2 className="text-base font-medium">选择特征</h2>
+            <p className="text-sm text-muted-foreground">选择用于训练的特征算子（可多选）。</p>
+            <FormField
+                control={form.control}
+                name="feature_ids"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="grid gap-2 border rounded-md p-3 max-h-64 overflow-auto max-w-2xl">
+                      {features.map((f) => {
+                        const value = String(f.id);
+                        const checked = field.value?.includes(value);
+                        return (
+                          <label key={f.id} className="flex items-center gap-2 text-sm">
+                            <Checkbox
+                              checked={checked}
+                              onCheckedChange={(isChecked) => {
+                                const next = new Set(field.value || []);
+                                if (isChecked) next.add(value);
+                                else next.delete(value);
+                                field.onChange(Array.from(next));
+                              }}
+                              disabled={isLoading || submitting}
+                            />
+                            <span>{f.name}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+          </div>
+
+          {/* 自适应 */}
+          <div className="space-y-2">
+            <h2 className="text-base font-medium">是否启用自适应</h2>
+            <p className="text-sm text-muted-foreground">根据数据动态调整训练过程。</p>
+            <FormField
                 control={form.control}
                 name="adaptive"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>自适应</FormLabel>
+                  <FormItem className="max-w-md">
                     <Select
                       value={field.value}
                       onValueChange={field.onChange}
@@ -253,16 +311,16 @@ export default function CreateJobPage() {
                   </FormItem>
                 )}
               />
+          </div>
 
-              <div className="sm:col-span-2 flex justify-end gap-3">
-                <Button type="submit" disabled={submitting || isLoading}>
-                  {submitting ? '创建中...' : '创建训练任务'}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+          {/* 提交 */}
+          <div className="flex justify-end gap-3">
+            <Button type="submit" disabled={submitting || isLoading}>
+              {submitting ? '创建中...' : '创建训练任务'}
+            </Button>
+          </div>
+        </form>
+      </Form>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import type { CommonReply, JobStatus } from './common';
 export interface TrainStartRequest {
   user_id: number;
   dataset_id: number;
+  feature_ids: number | number[];
   nodes: Record<string, unknown>;
   backbone_id: number;
   classifier_id: number;
