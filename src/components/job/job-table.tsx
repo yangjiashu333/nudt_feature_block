@@ -29,10 +29,10 @@ export default function JobTable({ jobs }: Props) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>任务ID</TableHead>
+          <TableHead>ID</TableHead>
           <TableHead>状态</TableHead>
-          <TableHead>进度</TableHead>
-          <TableHead>测试情况</TableHead>
+          <TableHead>训练进度</TableHead>
+          <TableHead>测试任务</TableHead>
           <TableHead>创建时间</TableHead>
         </TableRow>
       </TableHeader>

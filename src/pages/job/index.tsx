@@ -38,7 +38,7 @@ export default function JobPage() {
         </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader>
             <CardTitle>总任务</CardTitle>
@@ -62,12 +62,6 @@ export default function JobPage() {
             <CardTitle>完成</CardTitle>
           </CardHeader>
           <CardContent className="text-2xl font-semibold">{stats.done}</CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>失败</CardTitle>
-          </CardHeader>
-          <CardContent className="text-2xl font-semibold">{stats.failed}</CardContent>
         </Card>
       </div>
 
