@@ -11,6 +11,10 @@ export const datasetApi = {
   },
 
   getImageUrl(image_path: string) {
+    // 在 MSW 模式下支持直接使用本地静态资源路径
+    if (apiConfig.enableMSW && image_path.startsWith('/')) {
+      return image_path;
+    }
     return apiConfig.getUrl(`/api/images/file?image_path=${encodeURIComponent(image_path)}`);
   },
 };

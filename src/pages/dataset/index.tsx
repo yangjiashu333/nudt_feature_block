@@ -15,11 +15,6 @@ const modalityLabels: Record<Modality, string> = {
   '1D': '一维数据',
 };
 
-const modalityDescriptions: Record<Modality, string> = {
-  SAR: '合成孔径雷达图像数据集',
-  RD: '距离多普勒雷达信号数据集',
-  '1D': '一维信号处理数据集',
-};
 
 export default function DatasetPage() {
   const { datasets, isLoading, getDatasetList, setSelectedDataset, toggleViewer } =
@@ -106,9 +101,6 @@ export default function DatasetPage() {
                         {groupedDatasets[modality].length} 个数据集
                       </Badge>
                     </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      {modalityDescriptions[modality]}
-                    </p>
                   </div>
                 </div>
               </CardHeader>

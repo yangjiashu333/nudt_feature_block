@@ -34,7 +34,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 1,
       name: 'sar_sample_001.jpg',
       modality: 'SAR',
-      path: 'https://picsum.photos/800/600?random=1',
+      path: '/mock-images/sar_001.svg',
       label: '训练样本 - 舰船目标',
     },
     {
@@ -42,7 +42,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 1,
       name: 'sar_sample_002.jpg',
       modality: 'SAR',
-      path: 'https://picsum.photos/800/600?random=2',
+      path: '/mock-images/sar_002.svg',
       label: '训练样本 - 海面背景',
     },
     {
@@ -50,7 +50,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 1,
       name: 'sar_sample_003.jpg',
       modality: 'SAR',
-      path: 'https://picsum.photos/800/600?random=3',
+      path: '/mock-images/sar_003.svg',
       label: '验证样本 - 舰船目标',
     },
     {
@@ -58,7 +58,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 1,
       name: 'sar_sample_004.jpg',
       modality: 'SAR',
-      path: 'https://picsum.photos/800/600?random=4',
+      path: '/mock-images/sar_004.svg',
       label: '验证样本 - 海岸线',
     },
     {
@@ -66,7 +66,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 1,
       name: 'sar_sample_005.jpg',
       modality: 'SAR',
-      path: 'https://picsum.photos/800/600?random=5',
+      path: '/mock-images/sar_005.svg',
       label: '测试样本 - 复杂场景',
     },
   ],
@@ -76,7 +76,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 2,
       name: 'sar_b_001.png',
       modality: 'SAR',
-      path: 'https://picsum.photos/800/600?random=6',
+      path: '/mock-images/sar_006.svg',
       label: '高分辨率SAR图像',
     },
     {
@@ -84,7 +84,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 2,
       name: 'sar_b_002.png',
       modality: 'SAR',
-      path: 'https://picsum.photos/800/600?random=7',
+      path: '/mock-images/sar_007.svg',
       label: '多极化SAR数据',
     },
     {
@@ -92,7 +92,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 2,
       name: 'sar_b_003.png',
       modality: 'SAR',
-      path: 'https://picsum.photos/800/600?random=8',
+      path: '/mock-images/sar_008.svg',
       label: '干涉SAR图像',
     },
   ],
@@ -102,7 +102,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 3,
       name: 'rd_signal_001.jpg',
       modality: 'RD',
-      path: 'https://picsum.photos/800/600?random=9',
+      path: '/mock-images/rd_001.svg',
       label: 'RD谱图 - 目标1',
     },
     {
@@ -110,7 +110,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 3,
       name: 'rd_signal_002.jpg',
       modality: 'RD',
-      path: 'https://picsum.photos/800/600?random=10',
+      path: '/mock-images/rd_002.svg',
       label: 'RD谱图 - 目标2',
     },
     {
@@ -118,7 +118,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 3,
       name: 'rd_signal_003.jpg',
       modality: 'RD',
-      path: 'https://picsum.photos/800/600?random=11',
+      path: '/mock-images/rd_003.svg',
       label: 'RD谱图 - 杂波',
     },
     {
@@ -126,7 +126,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 3,
       name: 'rd_signal_004.jpg',
       modality: 'RD',
-      path: 'https://picsum.photos/800/600?random=12',
+      path: '/mock-images/rd_004.svg',
       label: 'RD谱图 - 噪声',
     },
   ],
@@ -136,7 +136,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 4,
       name: '1d_waveform_001.png',
       modality: '1D',
-      path: 'https://picsum.photos/800/600?random=13',
+      path: '/mock-images/1d_001.svg',
       label: '正弦波形',
     },
     {
@@ -144,7 +144,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 4,
       name: '1d_waveform_002.png',
       modality: '1D',
-      path: 'https://picsum.photos/800/600?random=14',
+      path: '/mock-images/1d_002.svg',
       label: '方波信号',
     },
     {
@@ -152,7 +152,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 4,
       name: '1d_waveform_003.png',
       modality: '1D',
-      path: 'https://picsum.photos/800/600?random=15',
+      path: '/mock-images/1d_003.svg',
       label: '调频信号',
     },
     {
@@ -160,7 +160,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 4,
       name: '1d_waveform_004.png',
       modality: '1D',
-      path: 'https://picsum.photos/800/600?random=16',
+      path: '/mock-images/1d_004.svg',
       label: '脉冲信号',
     },
     {
@@ -168,7 +168,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 4,
       name: '1d_waveform_005.png',
       modality: '1D',
-      path: 'https://picsum.photos/800/600?random=17',
+      path: '/mock-images/1d_005.svg',
       label: '噪声信号',
     },
     {
@@ -176,7 +176,7 @@ export const mockImages: Record<number, Image[]> = {
       dataset_id: 4,
       name: '1d_waveform_006.png',
       modality: '1D',
-      path: 'https://picsum.photos/800/600?random=18',
+      path: '/mock-images/1d_006.svg',
       label: '复合信号',
     },
   ],

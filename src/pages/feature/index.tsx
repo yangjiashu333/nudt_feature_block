@@ -18,11 +18,6 @@ const modalityLabels: Record<Modality, string> = {
   '1D': '一维数据',
 };
 
-const modalityDescriptions: Record<Modality, string> = {
-  SAR: '合成孔径雷达数据处理特征',
-  RD: '距离多普勒数据处理特征',
-  '1D': '一维信号处理特征',
-};
 
 export default function FeaturePage() {
   const {
@@ -130,9 +125,6 @@ export default function FeaturePage() {
                         {groupedFeatures[modality].length} 个算子
                       </Badge>
                     </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      {modalityDescriptions[modality]}
-                    </p>
                   </div>
                 </div>
               </CardHeader>

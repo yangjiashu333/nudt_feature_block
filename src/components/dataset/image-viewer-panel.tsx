@@ -90,14 +90,14 @@ export function ImageViewerPanel({
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-8">
+      <div className="flex-1 min-h-0 p-4">
         {!image ? (
-          <div className="flex flex-col items-center justify-center text-center">
+          <div className="flex h-full flex-col items-center justify-center text-center">
             <ImageIcon className="h-24 w-24 text-muted-foreground mb-6" />
             <p className="text-muted-foreground">选择文件查看图片</p>
           </div>
         ) : imageError ? (
-          <div className="flex flex-col items-center justify-center text-center">
+          <div className="flex h-full flex-col items-center justify-center text-center">
             <ImageIcon className="h-24 w-24 text-muted-foreground mb-6" />
             <p className="text-muted-foreground mb-4">图片加载失败</p>
             <Button
@@ -111,7 +111,7 @@ export function ImageViewerPanel({
             </Button>
           </div>
         ) : (
-          <div className="relative max-w-full max-h-full overflow-auto">
+          <div className="relative h-full w-full overflow-auto flex items-center justify-center">
             {imageLoading && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-muted-foreground">加载中...</div>
@@ -121,7 +121,7 @@ export function ImageViewerPanel({
               src={getImageUrl(image)}
               alt={image.name}
               className={cn(
-                'max-w-full max-h-full object-contain transition-all duration-200',
+                'h-full w-auto max-w-none object-contain transition-all duration-200',
                 imageLoading && 'opacity-0'
               )}
               style={{
