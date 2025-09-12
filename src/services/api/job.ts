@@ -60,12 +60,12 @@ export const jobApi = {
   },
 
   // High-level SSE helper with parsing
-  // Usage: const { es, close } = jobApi.subscribeTrainLogs(jobId, onEvent, onError)
+  // Usage: const es = jobApi.subscribeTrainLogs(jobId, onEvent, onError)
   subscribeTrainLogs(
     jobId: string,
     onEvent: (event: TrainLogEvent) => void,
     onError?: (error: Event) => void
-  ) {
+  ): EventSource {
     const es = this.getTrainLogsSSE(jobId);
 
     es.onmessage = (e: MessageEvent<string>) => {
@@ -78,10 +78,7 @@ export const jobApi = {
       // 注意：EventSource 会自动重连；如需手动停止，可调用 close()
     };
 
-    return {
-      es,
-      close: () => es.close(),
-    };
+    return es;
   },
 };
 

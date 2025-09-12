@@ -11,9 +11,4 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  test: {
-    globals: true,
-    environment: 'node',
-    setupFiles: ['./src/__tests__/setup/vitest.setup.ts'],
-  },
 });

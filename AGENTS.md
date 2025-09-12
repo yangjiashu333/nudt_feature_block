@@ -1,48 +1,35 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-
-- `src/`: application code.
-  - `components/` (UI, feature, user, dataset components), `pages/`, `layouts/`, `hooks/`, `models/` (Zustand stores), `services/` (API), `types/`, `config/`, `mocks/` (MSW), `assets/`.
-  - `__tests__/`: unit tests and setup (`src/__tests__/setup/vitest.setup.ts`).
-- `public/`: static assets (MSW worker output).
-- `dist/`: production build output.
-- Path alias: import via `@/...` for files under `src/`.
+- App code lives in `src/` with feature folders: `pages/`, `components/`, `services/`, `models/`, `types/`, `hooks/`, `layouts/`, `lib/`, `mocks/`, and `assets/`.
+- Public assets are in `public/`. Built output goes to `dist/` (ignored). Coverage reports are in `coverage/`.
+- Path alias `@` maps to `src` (see `vite.config.ts`). Example: `import { http } from '@/services/http'`.
 
 ## Build, Test, and Development Commands
-
-- `npm run dev`: start Vite dev server.
-- `npm run build`: type-check (`tsc -b`) and build for production.
-- `npm run preview`: preview the production build locally.
-- `npm run lint`: run ESLint.
-- `npm run format`: run Prettier.
-- `npm test` or `npm run test:run`: run Vitest in Node env.
-- `npm run test:ui`: open the Vitest UI.
-- Coverage (example): `npx vitest run --coverage`.
+- `npm run dev` — Start Vite dev server.
+- `npm run build` — Type-check (`tsc -b`) and build for production.
+- `npm run preview` — Serve the production build locally.
+- `npm run test` — Run Vitest in watch mode.
+- `npm run test:run` — Run Vitest in CI mode.
+- `npm run test:ui` — Launch Vitest UI.
+- `npm run lint` — Lint with ESLint. `npm run format` — Format with Prettier.
 
 ## Coding Style & Naming Conventions
-
-- TypeScript, strict mode enabled. React + Vite.
-- Prettier: 2 spaces, single quotes, semicolons, width 100.
-- ESLint: recommended + TS + React hooks; unused vars allowed when prefixed with `_`.
-- Files: kebab-case (e.g., `edit-feature-modal.tsx`); components exported with PascalCase.
-- Use the `@` alias for imports: `import { useFeatureStore } from '@/models/feature';`.
+- TypeScript, React, Vite, Tailwind CSS 4. Use functional components and hooks.
+- Prettier: single quotes, semicolons, width 100, 2-space tabs (`.prettierrc`).
+- ESLint: TypeScript + React Hooks rules; unused variables prefixed with `_` allowed (`eslint.config.js`).
+- File names: kebab-case for files, PascalCase for React components, camelCase for functions/variables, `IThing` avoided for types.
 
 ## Testing Guidelines
-
-- Framework: Vitest with globals; setup at `src/__tests__/setup/vitest.setup.ts`.
-- MSW is used for API mocking; enable via env (`VITE_ENABLE_MSW=true`) for dev/tests.
-- Place tests under `src/__tests__`, name as `*.test.ts(x)` mirroring source folders.
-- Keep tests deterministic; reset stores/mocks between tests.
+- Framework: Vitest. Co-locate tests as `*.test.ts`/`*.test.tsx` near the unit under test or in `__tests__/`.
+- Prefer pure unit tests for `lib/` and `services/`; mock HTTP with MSW (`src/mocks/`).
+- Aim for meaningful coverage on core logic; run `npm run test:run` locally before pushing. Add assertions for error paths.
 
 ## Commit & Pull Request Guidelines
-
-- Use Conventional Commits: `feat(scope): ...`, `fix(scope): ...`, `refactor(scope): ...`.
-  - Examples: `feat(feature): implement CRUD`, `fix(api): timeout handling`.
-- PRs: include clear description, linked issues, screenshots for UI changes, and test notes.
-- Before opening a PR: run `npm run lint`, `npm test`, and ensure `npm run build` succeeds.
+- Use Conventional Commits: `feat(scope): summary`, `fix(scope): summary`, `refactor(scope): ...`. Example: `feat(job): add create job page`.
+- PRs must include: clear description, linked issue (if any), screenshots for UI changes, and test notes.
+- Keep PRs small and focused; update docs when changing public APIs or env.
 
 ## Security & Configuration Tips
-
-- Configure env in `.env.local` (see `.env.example`). Keys: `VITE_API_BASE_URL`, `VITE_API_TIMEOUT`, `VITE_ENABLE_MSW`.
-- Do not commit real secrets. Prefer mock mode (`VITE_ENABLE_MSW=true`) for local development.
+- Environment config via `.env.local` (see `.env.example`). Required keys: `VITE_API_BASE_URL`, `VITE_API_TIMEOUT`, `VITE_ENABLE_MSW`.
+- Do not commit secrets. Use `VITE_ENABLE_MSW=true` for offline development and tests.

@@ -118,7 +118,7 @@ export const useJobStore = create<JobState>()(
         const { disconnectFromLogs } = get();
         disconnectFromLogs();
         try {
-          const { es, close } = jobApi.subscribeTrainLogs(
+          const es = jobApi.subscribeTrainLogs(
             jobId,
             (event: TrainLogEvent) => set((state) => ({ logs: [...state.logs, event] })),
             (_error) => {
@@ -127,7 +127,6 @@ export const useJobStore = create<JobState>()(
             }
           );
           set({ sseConnection: es });
-          (es as EventSource & { _closeFunction?: () => void })._closeFunction = close;
         } catch {
           set({ error: 'Failed to connect to logs' });
         }
@@ -136,9 +135,7 @@ export const useJobStore = create<JobState>()(
       disconnectFromLogs: () => {
         const { sseConnection } = get();
         if (sseConnection) {
-          const closeFunction = (sseConnection as EventSource & { _closeFunction?: () => void })._closeFunction;
-          if (closeFunction) closeFunction();
-          else sseConnection.close();
+          sseConnection.close();
           set({ sseConnection: null });
         }
       },
